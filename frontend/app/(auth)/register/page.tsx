@@ -39,7 +39,7 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   useEffect(() => {
-    document.title = 'Register | Alimento'
+    document.title = 'Create an Account – Join Alimento'
   }, [])
 
   const validateForm = (currentForm: RegisterForm): RegisterFormErrors => {
@@ -75,9 +75,7 @@ export default function RegisterPage() {
     return newErrors
   }
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, type, checked, value } = e.target
 
     const updatedForm: RegisterForm = {
@@ -90,7 +88,7 @@ export default function RegisterPage() {
     const allErrors = validateForm(updatedForm)
     const singleError = (allErrors as any)[id] || null
 
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [id]: singleError,
     }))
@@ -139,18 +137,13 @@ export default function RegisterPage() {
               }`}
             />
             {errors.fullName && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.fullName}
-              </p>
+              <p className="mt-1 text-xs text-destructive">{errors.fullName}</p>
             )}
           </div>
 
           {/* EMAIL */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email
             </label>
             <input
@@ -163,9 +156,7 @@ export default function RegisterPage() {
               }`}
             />
             {errors.email && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.email}
-              </p>
+              <p className="mt-1 text-xs text-destructive">{errors.email}</p>
             )}
           </div>
 
@@ -189,16 +180,14 @@ export default function RegisterPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(prev => !prev)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-3 flex items-center text-muted-foreground text-lg"
               >
                 {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
               </button>
             </div>
             {errors.password && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.password}
-              </p>
+              <p className="mt-1 text-xs text-destructive">{errors.password}</p>
             )}
           </div>
 
@@ -224,16 +213,10 @@ export default function RegisterPage() {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setShowConfirmPassword(prev => !prev)
-                }
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-3 flex items-center text-muted-foreground text-lg"
               >
-                {showConfirmPassword ? (
-                  <RiEyeOffLine />
-                ) : (
-                  <RiEyeLine />
-                )}
+                {showConfirmPassword ? <RiEyeOffLine /> : <RiEyeLine />}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -255,14 +238,10 @@ export default function RegisterPage() {
             <div className="text-xs text-muted-foreground">
               <label htmlFor="agree">
                 I agree to the{' '}
-                <span className="underline">
-                  Terms &amp; Conditions
-                </span>
+                <span className="underline">Terms &amp; Conditions</span>
               </label>
               {errors.agree && (
-                <p className="mt-1 text-xs text-destructive">
-                  {errors.agree}
-                </p>
+                <p className="mt-1 text-xs text-destructive">{errors.agree}</p>
               )}
             </div>
           </div>

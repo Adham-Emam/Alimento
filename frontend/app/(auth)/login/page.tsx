@@ -19,17 +19,10 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const validateForm = (form: LoginForm): LoginFormErrors => {
   const errors: LoginFormErrors = {}
 
-  if (!form.email.trim())
-    errors.email = 'Email or username is required'
-  else if (
-    !form.email.includes('@') &&
-    form.email.length < 3
-  ) {
+  if (!form.email.trim()) errors.email = 'Email or username is required'
+  else if (!form.email.includes('@') && form.email.length < 3) {
     errors.email = 'Username must be at least 3 characters'
-  } else if (
-    form.email.includes('@') &&
-    !emailRegex.test(form.email)
-  ) {
+  } else if (form.email.includes('@') && !emailRegex.test(form.email)) {
     errors.email = 'Invalid email format'
   }
 
@@ -47,7 +40,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
 
   useEffect(() => {
-    document.title = 'Login | Alimento'
+    document.title = 'Login – Access Your Alimento Account'
   }, [])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,7 +49,7 @@ export default function LoginPage() {
     setForm(updatedForm)
 
     const validationErrors = validateForm(updatedForm)
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [name]: validationErrors[name as keyof LoginFormErrors] ?? null,
     }))
@@ -93,9 +86,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* EMAIL  */}
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium mb-1">Email</label>
             <input
               name="email"
               type="text"
@@ -107,9 +98,7 @@ export default function LoginPage() {
                   : 'border-border focus:ring-ring'
               }`}
             />
-            {errors.email && (
-              <p className={errorTextClasses}>{errors.email}</p>
-            )}
+            {errors.email && <p className={errorTextClasses}>{errors.email}</p>}
           </div>
 
           {/* PASSWORD */}
@@ -129,7 +118,7 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(prev => !prev)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-2 flex items-center text-muted-foreground hover:text-header text-lg"
               >
                 {showPassword ? <RiEyeOffFill /> : <RiEyeFill />}
