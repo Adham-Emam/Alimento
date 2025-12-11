@@ -6,3 +6,6 @@ db.*
 /staticfiles/
 /media/
 .vscode/
+venv/
+.idea/
+/venv/
