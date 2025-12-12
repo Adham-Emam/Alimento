@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
+import axios from 'axios'
 import Link from 'next/link'
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri'
+import { ImSpinner8 } from 'react-icons/im'
+import { Button } from '@/components/ui/button'
 
 interface LoginForm {
   email: string
@@ -38,6 +41,7 @@ export default function LoginPage() {
   })
   const [errors, setErrors] = useState<LoginFormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     document.title = 'Login – Access Your Alimento Account'
@@ -55,18 +59,33 @@ export default function LoginPage() {
     }))
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
 
     const validationErrors = validateForm(form)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('Fix the errors before submitting')
+      setIsLoading(false)
       return
     }
 
-    alert('Login submitted (UI only for now)')
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/jwt/create/`
+      )
+
+      if (res.status !== 200) {
+        alert('Error While fetching')
+        return
+      }
+    } catch (err) {
+      alert(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const baseInputClasses =
@@ -147,12 +166,13 @@ export default function LoginPage() {
           </div>
 
           {/* SUBMIT */}
-          <button
+          <Button
             type="submit"
             className="mt-2 w-full rounded-md bg-primary text-primary-foreground font-semibold py-2.5 shadow-sm hover:brightness-95 transition"
+            disabled={isLoading}
           >
-            Login
-          </button>
+            {isLoading ? <ImSpinner8 className="animate-spin" /> : 'Login'}
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">

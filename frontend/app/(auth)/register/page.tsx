@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react'
+import axios from 'axios'
 import Link from 'next/link'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
+import { ImSpinner8 } from 'react-icons/im'
+import { Button } from '@/components/ui/button'
 
 type RegisterForm = {
   fullName: string
@@ -37,6 +40,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<RegisterFormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     document.title = 'Create an Account – Join Alimento'
@@ -94,18 +98,33 @@ export default function RegisterPage() {
     }))
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
 
     const validationErrors = validateForm(form)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('Fix the errors before submitting')
+      setIsLoading(false)
       return
     }
 
-    alert('Form Submitted Successfully!')
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/users/`
+      )
+
+      if (res.status !== 200) {
+        alert('Error While fetching')
+        return
+      }
+    } catch (err) {
+      alert(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -247,12 +266,17 @@ export default function RegisterPage() {
           </div>
 
           {/* SUBMIT BUTTON */}
-          <button
+          <Button
             type="submit"
-            className="mt-2 w-full rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 transition"
+            className="mt-2 w-full rounded-md bg-primary text-primary-foreground font-semibold py-2.5 shadow-sm hover:brightness-95 transition"
+            disabled={isLoading}
           >
-            Create account
-          </button>
+            {isLoading ? (
+              <ImSpinner8 className="animate-spin" />
+            ) : (
+              'Create account'
+            )}
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
