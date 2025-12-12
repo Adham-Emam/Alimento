@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react'
+import axios from 'axios'
 import Link from 'next/link'
 import { RiEyeLine, RiEyeOffLine } from 'react-icons/ri'
+import { ImSpinner8 } from 'react-icons/im'
+import { Button } from '@/components/ui/button'
 
 type RegisterForm = {
   fullName: string
@@ -37,9 +40,10 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<RegisterFormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    document.title = 'Register | Alimento'
+    document.title = 'Create an Account – Join Alimento'
   }, [])
 
   const validateForm = (currentForm: RegisterForm): RegisterFormErrors => {
@@ -75,9 +79,7 @@ export default function RegisterPage() {
     return newErrors
   }
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { id, type, checked, value } = e.target
 
     const updatedForm: RegisterForm = {
@@ -90,24 +92,39 @@ export default function RegisterPage() {
     const allErrors = validateForm(updatedForm)
     const singleError = (allErrors as any)[id] || null
 
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [id]: singleError,
     }))
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
 
     const validationErrors = validateForm(form)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('Fix the errors before submitting')
+      setIsLoading(false)
       return
     }
 
-    alert('Form Submitted Successfully!')
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/users/`
+      )
+
+      if (res.status !== 200) {
+        alert('Error While fetching')
+        return
+      }
+    } catch (err) {
+      alert(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -139,18 +156,13 @@ export default function RegisterPage() {
               }`}
             />
             {errors.fullName && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.fullName}
-              </p>
+              <p className="mt-1 text-xs text-destructive">{errors.fullName}</p>
             )}
           </div>
 
           {/* EMAIL */}
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
               Email
             </label>
             <input
@@ -163,9 +175,7 @@ export default function RegisterPage() {
               }`}
             />
             {errors.email && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.email}
-              </p>
+              <p className="mt-1 text-xs text-destructive">{errors.email}</p>
             )}
           </div>
 
@@ -189,16 +199,14 @@ export default function RegisterPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(prev => !prev)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-3 flex items-center text-muted-foreground text-lg"
               >
                 {showPassword ? <RiEyeOffLine /> : <RiEyeLine />}
               </button>
             </div>
             {errors.password && (
-              <p className="mt-1 text-xs text-destructive">
-                {errors.password}
-              </p>
+              <p className="mt-1 text-xs text-destructive">{errors.password}</p>
             )}
           </div>
 
@@ -224,16 +232,10 @@ export default function RegisterPage() {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setShowConfirmPassword(prev => !prev)
-                }
+                onClick={() => setShowConfirmPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-3 flex items-center text-muted-foreground text-lg"
               >
-                {showConfirmPassword ? (
-                  <RiEyeOffLine />
-                ) : (
-                  <RiEyeLine />
-                )}
+                {showConfirmPassword ? <RiEyeOffLine /> : <RiEyeLine />}
               </button>
             </div>
             {errors.confirmPassword && (
@@ -255,25 +257,26 @@ export default function RegisterPage() {
             <div className="text-xs text-muted-foreground">
               <label htmlFor="agree">
                 I agree to the{' '}
-                <span className="underline">
-                  Terms &amp; Conditions
-                </span>
+                <span className="underline">Terms &amp; Conditions</span>
               </label>
               {errors.agree && (
-                <p className="mt-1 text-xs text-destructive">
-                  {errors.agree}
-                </p>
+                <p className="mt-1 text-xs text-destructive">{errors.agree}</p>
               )}
             </div>
           </div>
 
           {/* SUBMIT BUTTON */}
-          <button
+          <Button
             type="submit"
-            className="mt-2 w-full rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-90 transition"
+            className="mt-2 w-full rounded-md bg-primary text-primary-foreground font-semibold py-2.5 shadow-sm hover:brightness-95 transition"
+            disabled={isLoading}
           >
-            Create account
-          </button>
+            {isLoading ? (
+              <ImSpinner8 className="animate-spin" />
+            ) : (
+              'Create account'
+            )}
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">

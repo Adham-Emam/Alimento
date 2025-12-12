@@ -1,8 +1,11 @@
 'use client'
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
+import axios from 'axios'
 import Link from 'next/link'
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri'
+import { ImSpinner8 } from 'react-icons/im'
+import { Button } from '@/components/ui/button'
 
 interface LoginForm {
   email: string
@@ -19,17 +22,10 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const validateForm = (form: LoginForm): LoginFormErrors => {
   const errors: LoginFormErrors = {}
 
-  if (!form.email.trim())
-    errors.email = 'Email or username is required'
-  else if (
-    !form.email.includes('@') &&
-    form.email.length < 3
-  ) {
+  if (!form.email.trim()) errors.email = 'Email or username is required'
+  else if (!form.email.includes('@') && form.email.length < 3) {
     errors.email = 'Username must be at least 3 characters'
-  } else if (
-    form.email.includes('@') &&
-    !emailRegex.test(form.email)
-  ) {
+  } else if (form.email.includes('@') && !emailRegex.test(form.email)) {
     errors.email = 'Invalid email format'
   }
 
@@ -45,9 +41,10 @@ export default function LoginPage() {
   })
   const [errors, setErrors] = useState<LoginFormErrors>({})
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    document.title = 'Login | Alimento'
+    document.title = 'Login – Access Your Alimento Account'
   }, [])
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -56,24 +53,39 @@ export default function LoginPage() {
     setForm(updatedForm)
 
     const validationErrors = validateForm(updatedForm)
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
       [name]: validationErrors[name as keyof LoginFormErrors] ?? null,
     }))
   }
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
+    setIsLoading(true)
 
     const validationErrors = validateForm(form)
     setErrors(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) {
       console.log('Fix the errors before submitting')
+      setIsLoading(false)
       return
     }
 
-    alert('Login submitted (UI only for now)')
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/jwt/create/`
+      )
+
+      if (res.status !== 200) {
+        alert('Error While fetching')
+        return
+      }
+    } catch (err) {
+      alert(err)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const baseInputClasses =
@@ -82,7 +94,7 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md bg-card text-card-foreground rounded-2xl shadow-lg border border-border p-8">
+      <div className="w-full max-w-xl bg-card rounded-2xl shadow-lg border border-border p-8">
         <h1 className="text-2xl font-bold text-header text-center mb-2">
           Welcome back
         </h1>
@@ -93,9 +105,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* EMAIL  */}
           <div>
-            <label className="block text-sm font-medium mb-1">
-              Email
-            </label>
+            <label className="block text-sm font-medium mb-1">Email</label>
             <input
               name="email"
               type="text"
@@ -107,9 +117,7 @@ export default function LoginPage() {
                   : 'border-border focus:ring-ring'
               }`}
             />
-            {errors.email && (
-              <p className={errorTextClasses}>{errors.email}</p>
-            )}
+            {errors.email && <p className={errorTextClasses}>{errors.email}</p>}
           </div>
 
           {/* PASSWORD */}
@@ -129,7 +137,7 @@ export default function LoginPage() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(prev => !prev)}
+                onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute inset-y-0 right-2 flex items-center text-muted-foreground hover:text-header text-lg"
               >
                 {showPassword ? <RiEyeOffFill /> : <RiEyeFill />}
@@ -158,12 +166,13 @@ export default function LoginPage() {
           </div>
 
           {/* SUBMIT */}
-          <button
+          <Button
             type="submit"
             className="mt-2 w-full rounded-md bg-primary text-primary-foreground font-semibold py-2.5 shadow-sm hover:brightness-95 transition"
+            disabled={isLoading}
           >
-            Login
-          </button>
+            {isLoading ? <ImSpinner8 className="animate-spin" /> : 'Login'}
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
