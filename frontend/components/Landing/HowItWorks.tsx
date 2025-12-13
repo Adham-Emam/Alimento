@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import { motion } from 'motion/react'
-import { useTheme } from '@/context/ThemeContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import sectionImg from '@/public/howItWorks-section.svg'
 import sectionImgLight from '@/public/howItWorks-section-light.svg'
 

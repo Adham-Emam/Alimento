@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import { useTheme } from '@/context/ThemeContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import JourneyImage from '@/public/about-section.svg'
 import JourneyImageLight from '@/public/about-section-light.svg'
 import { motion } from 'motion/react'

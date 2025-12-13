@@ -6,7 +6,7 @@ import { motion } from 'motion/react'
 import HeroImgLight from '@/public/hero-section-light.svg'
 import HeroImg from '@/public/hero-section.svg'
 import { Typewriter } from 'react-simple-typewriter'
-import { useTheme } from '@/context/ThemeContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import { Button } from '@/components/ui/button'
 
 const wordList = ['Nutrition', 'Wellness', 'Vitality', 'Balance', 'Lifestyle']
