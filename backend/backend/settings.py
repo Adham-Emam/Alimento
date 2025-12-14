@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Apps
     "accounts",
+    'foods',
     # Third party
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
