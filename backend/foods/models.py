@@ -1,7 +1,8 @@
 from django.db import models
-from django.conf import settings
+from django.contrib.auth import get_user_model
 
-# Create your models here.
+
+User = get_user_model()
 
 
 class Food(models.Model):
@@ -16,7 +17,7 @@ class Food(models.Model):
     barcode = models.CharField(max_length=255, unique=True, null=True, blank=True)
     source = models.CharField(max_length=50, choices=SOURCE_CHOICES, default="user")
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -98,7 +99,7 @@ class FoodPrice(models.Model):
     quantity = models.FloatField(null=True, blank=True)
     unit = models.CharField(max_length=50, blank=True, null=True)
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
