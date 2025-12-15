@@ -2,7 +2,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from rest_framework import status
 from rest_framework.test import APITestCase
-from blog.models import BlogPost, PostComment, PostLike, Subscriber
+from blog.models import BlogPost, PostComment
 
 User = get_user_model()
 
