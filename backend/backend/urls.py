@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -10,6 +12,7 @@ urlpatterns = [
     path("api/auth/", include("accounts.urls")),
     path("api/user/", include("profiles.urls")),
     path("api/foods/", include("foods.urls")),
+    path("api/blog/", include("blog.urls")),
     # OpenAPI schema
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Swagger UI
@@ -19,3 +22,6 @@ urlpatterns = [
         name="swagger-ui",
     ),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

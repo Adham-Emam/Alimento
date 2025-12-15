@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "accounts",
     "profiles",
     "foods",
+    "blog",
     # Third party
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
@@ -129,6 +130,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
@@ -152,6 +156,7 @@ REST_FRAMEWORK = {
         "user": "50/minute",
     },
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
 }
 
 SPECTACULAR_SETTINGS = {
@@ -179,3 +184,15 @@ DJOSER = {
         "current_user": "accounts.serializers.UserSerializer",
     },
 }
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# TODO: Change before production
+# Production (example with SMTP)
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_HOST = "smtp.gmail.com"
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+# EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
+FRONTEND_URL = os.environ.get("FRONTEND_URL")
