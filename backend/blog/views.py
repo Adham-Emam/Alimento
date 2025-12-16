@@ -113,6 +113,6 @@ class SubscriberCreateView(generics.CreateAPIView):
         if Subscriber.objects.filter(email=request.data.get("email")).exists():
             return Response(
                 {"detail": "Email already subscribed"},
-                status=status.HTTP_200_OK,
+                status=status.HTTP_409_CONFLICT,
             )
         return super().create(request, *args, **kwargs)
