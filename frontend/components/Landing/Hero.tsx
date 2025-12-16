@@ -49,6 +49,7 @@ const Hero = () => {
           src={theme === 'light' ? HeroImg : HeroImgLight}
           width={488}
           height={488}
+          loading="eager"
           alt="Hero Image"
         />
       </motion.div>
