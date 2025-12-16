@@ -3,7 +3,7 @@
 'use client'
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
-import { useRouter } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri'
 import { ImSpinner8 } from 'react-icons/im'
@@ -32,6 +32,7 @@ interface FormErrorsProps {
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/
+const safeNextRegex = /^\/(?!\/)[\w\-./?=#%]*$/
 
 const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
   const [formData, setFormData] = useState<FormDataProps>({
@@ -48,8 +49,10 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
   const [isLoading, setIsLoading] = useState(false)
 
   const { login, register } = useAuth()
+  const searchParams = useSearchParams()
   const router = useRouter()
-
+  const rawNext = searchParams.get('next')
+  const next = rawNext && safeNextRegex.test(rawNext) ? rawNext : '/'
   useEffect(() => {
     document.title =
       mode === 'login'
@@ -147,7 +150,11 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
           password: formData.password,
         })
       }
-      router.push('/dashboard')
+      if (next) {
+        router.replace(next)
+      } else {
+        router.push('/dashboard')
+      }
     } catch (err: any) {
       console.error('Auth error:', err)
 

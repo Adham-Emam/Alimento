@@ -51,7 +51,7 @@ const Footer = () => {
           <h4 className="text-lg font-medium mb-3 text-header">Resources</h4>
           <ul className="space-y-2 text-sm">
             <li className="hover:text-header duration-300 cursor-pointer">
-              Blog
+              <Link href="/blog">Blog</Link>
             </li>
             <li className="hover:text-header duration-300 cursor-pointer">
               FAQs

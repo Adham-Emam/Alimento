@@ -82,6 +82,8 @@ axiosPrivate.interceptors.response.use(
       _retry?: boolean
     }
 
+    const currentPath = window.location.pathname + window.location.search
+
     // If 401 and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
@@ -91,7 +93,9 @@ axiosPrivate.interceptors.response.use(
 
         if (!refreshToken) {
           tokenUtils.clearTokens()
-          window.location.href = '/login'
+          window.location.href = `/login?next=${encodeURIComponent(
+            currentPath
+          )}`
           return Promise.reject(error)
         }
 
@@ -111,7 +115,7 @@ axiosPrivate.interceptors.response.use(
         return axiosPrivate(originalRequest)
       } catch (refreshError) {
         tokenUtils.clearTokens()
-        window.location.href = '/login'
+        window.location.href = `/login?next=${encodeURIComponent(currentPath)}`
         return Promise.reject(refreshError)
       }
     }
