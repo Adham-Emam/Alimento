@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import SubscribeForm from '@/components/Landing/SubscribeForm'
 import { Separator } from '../ui/separator'
 import { FaYoutube, FaInstagram } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
@@ -80,6 +81,12 @@ const Footer = () => {
             <span className="hover:text-header duration-300 cursor-pointer">
               <FaInstagram />
             </span>
+          </div>
+          <div className="w-full mt-5">
+            <h4 className="text-lg font-medium mb-2 text-header">
+              Subscribe to get the latest news
+            </h4>
+            <SubscribeForm />
           </div>
         </div>
       </div>
