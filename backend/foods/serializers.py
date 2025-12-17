@@ -23,7 +23,7 @@ class NutritionProfileSerializer(serializers.ModelSerializer):
 
 
 class FoodItemSerializer(serializers.ModelSerializer):
-    serving_size = ServingSizeSerializer(read_only=True)
+    serving_size = ServingSizeSerializer(many=True, read_only=True)
     nutrition = NutritionProfileSerializer(read_only=True)
 
     class Meta:
@@ -61,6 +61,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "description",
+            "is_public",
             "ingredients",
             "created_at",
         ]
@@ -75,7 +76,8 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop("ingredients")
-        recipe = Recipe.objects.create(**validated_data)
+        user = self.context["request"].user
+        recipe = Recipe.objects.create(user=user, **validated_data)
 
         for item in ingredients_data:
             RecipeIngredient.objects.create(recipe=recipe, **item)
