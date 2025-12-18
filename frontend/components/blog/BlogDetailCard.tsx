@@ -1,12 +1,7 @@
-'use client'
-
-import { useState, useEffect } from 'react'
-import { apiWithAuth } from '@/lib/api'
 import Image from 'next/image'
 import { format } from 'date-fns'
-import axios from 'axios'
+
 import { FaHeart, FaRegHeart } from 'react-icons/fa'
-import BlogCardSkeleton from './BlogCardSkeleton'
 
 interface BlogPostProps {
   id: number
@@ -24,71 +19,13 @@ interface BlogPostProps {
   updated_at: string
 }
 
-const BlogDetailCard = ({ slug }: { slug: string }) => {
-  const [post, setPost] = useState<BlogPostProps | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isLiking, setIsLiking] = useState<boolean>(false)
+interface PageProps {
+  post: BlogPostProps
+  toggleLike: () => Promise<void>
+  isLiking: boolean
+}
 
-  const getPost = async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
-      const res = await apiWithAuth.get<BlogPostProps>(
-        `/api/blog/posts/${slug}`
-      )
-      setPost(res.data)
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.detail || 'Failed to load blog post')
-      } else {
-        setError('Unexpected error occurred')
-      }
-      console.error(err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    getPost()
-  }, [slug])
-
-  useEffect(() => {
-    window.document.title = post?.title || 'What’s New | Nutrition App'
-  }, [post])
-
-  const toggleLike = async () => {
-    if (!post || isLiking) return
-    setIsLiking(true)
-
-    try {
-      const res = await apiWithAuth.post<{ liked: boolean }>(
-        `/api/blog/posts/${post.id}/like/`
-      )
-      const liked = res.data.liked
-      setPost((prev) => {
-        if (!prev) return prev
-        return {
-          ...prev,
-          is_liked: liked,
-          likes: liked ? [...prev.likes, {}] : prev.likes.slice(0, -1),
-        }
-      })
-    } catch (err) {
-      console.error('Failed to toggle like', err)
-    } finally {
-      setIsLiking(false)
-    }
-  }
-
-  if (isLoading) return <BlogCardSkeleton />
-
-  if (error)
-    return <div className="text-center py-10 text-destructive">{error}</div>
-
-  if (!post) return null
-
+const BlogDetailCard = ({ post, toggleLike, isLiking }: PageProps) => {
   return (
     <article className="max-w-3xl mx-auto border rounded-2xl overflow-hidden bg-card shadow-sm p-6 space-y-6">
       {/* Thumbnail */}
