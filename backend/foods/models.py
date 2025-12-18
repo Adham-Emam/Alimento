@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from decimal import Decimal
 
 
 User = get_user_model()
@@ -7,7 +8,7 @@ User = get_user_model()
 
 class FoodItem(models.Model):
     name = models.CharField(max_length=255)
-    price = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
 
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -20,7 +21,7 @@ class ServingSize(models.Model):
     Serving size information for a food item
     """
 
-    food = models.OneToOneField(
+    food = models.ForeignKey(
         FoodItem, on_delete=models.CASCADE, related_name="serving_size"
     )
     description = models.CharField(max_length=255)
@@ -75,6 +76,7 @@ class NutritionProfile(models.Model):
 class Recipe(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
+    is_public = models.BooleanField(default=False)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recipes")
     ingredients = models.ManyToManyField(
