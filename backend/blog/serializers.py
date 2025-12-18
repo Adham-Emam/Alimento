@@ -13,11 +13,15 @@ class PostLikeSerializer(serializers.ModelSerializer):
 
 class PostCommentSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    username = serializers.SerializerMethodField()
 
     class Meta:
         model = PostComment
-        fields = ["id", "user", "post", "content", "created_at"]
+        fields = ["id", "user", "post", "content", "username", "created_at"]
         read_only_fields = ["user", "post", "created_at"]
+
+    def get_username(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
 
 
 class BlogPostSerializer(serializers.ModelSerializer):
