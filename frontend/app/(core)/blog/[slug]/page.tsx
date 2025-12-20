@@ -2,7 +2,7 @@
 import axios from 'axios'
 import { apiWithAuth } from '@/lib/api'
 import { useState, useEffect, FormEvent } from 'react'
-import { useParams } from 'next/navigation'
+import { notFound, useParams } from 'next/navigation'
 import BlogDetailCard from '@/components/blog/BlogDetailCard'
 import PostComments from '@/components/blog/PostComments'
 import BlogCardSkeleton from '@/components/blog/BlogCardSkeleton'
@@ -30,6 +30,7 @@ const BlogDetailPage = () => {
   const [comment, setComment] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+  const [isNotFound, setIsNotFound] = useState(false)
   const [isLiking, setIsLiking] = useState<boolean>(false)
 
   const getPost = async () => {
@@ -42,6 +43,10 @@ const BlogDetailPage = () => {
       setPost(res.data)
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
+        if (err.response?.status === 404) {
+          setIsNotFound(true)
+          return
+        }
         setError(err.response?.data?.detail || 'Failed to load blog post')
       } else {
         setError('Unexpected error occurred')
@@ -114,6 +119,10 @@ const BlogDetailPage = () => {
   }
 
   if (isLoading) return <BlogCardSkeleton />
+
+  if (isNotFound) {
+    notFound()
+  }
 
   if (error)
     return <div className="text-center py-10 text-destructive">{error}</div>
