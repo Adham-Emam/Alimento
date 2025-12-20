@@ -52,7 +52,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
   const searchParams = useSearchParams()
   const router = useRouter()
   const rawNext = searchParams.get('next')
-  const next = rawNext && safeNextRegex.test(rawNext) ? rawNext : '/'
+  const next = rawNext && safeNextRegex.test(rawNext) ? rawNext : null
   useEffect(() => {
     document.title =
       mode === 'login'

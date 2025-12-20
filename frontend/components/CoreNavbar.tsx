@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { FaAppleAlt } from 'react-icons/fa'
 import { RiSunFill, RiMoonFill } from 'react-icons/ri'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import Logo from '@/public/Logo.png'
@@ -20,7 +21,7 @@ const navLinks = [
 const CoreNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-
+  const { user } = useAuth()
   const { theme, toggleTheme } = useTheme()
 
   const toggleOpen = () => setIsOpen(!isOpen)

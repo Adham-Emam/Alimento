@@ -38,7 +38,15 @@ export const tokenUtils = {
   },
 
   isAuthenticated: (): boolean => {
-    return !!tokenUtils.getAccessToken()
+    const token = tokenUtils.getAccessToken()
+    if (!token) return false
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      return payload.exp * 1000 > Date.now()
+    } catch {
+      return false
+    }
   },
 }
 
@@ -74,6 +82,14 @@ axiosPrivate.interceptors.request.use(
   }
 )
 
+let isRefreshing = false
+let refreshQueue: ((token: string) => void)[] = []
+
+const processQueue = (token: string) => {
+  refreshQueue.forEach((cb) => cb(token))
+  refreshQueue = []
+}
+
 // Response interceptor - Handle token refresh
 axiosPrivate.interceptors.response.use(
   (response) => response,
@@ -82,32 +98,46 @@ axiosPrivate.interceptors.response.use(
       _retry?: boolean
     }
 
-    const currentPath = window.location.pathname + window.location.search
+    const currentPath =
+      typeof window !== 'undefined'
+        ? window.location.pathname + window.location.search
+        : '/'
 
-    // If 401 and we haven't retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
+      const refreshToken = tokenUtils.getRefreshToken()
+
+      if (!refreshToken) {
+        tokenUtils.clearTokens()
+        window.location.href = `/login?next=${encodeURIComponent(currentPath)}`
+        return Promise.reject(error)
+      }
+
+      // 🔒 If refresh already in progress, queue request
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          refreshQueue.push((token: string) => {
+            if (originalRequest.headers) {
+              originalRequest.headers.Authorization = `Bearer ${token}`
+            }
+            resolve(axiosPrivate(originalRequest))
+          })
+        })
+      }
+
+      isRefreshing = true
+
       try {
-        const refreshToken = tokenUtils.getRefreshToken()
-
-        if (!refreshToken) {
-          tokenUtils.clearTokens()
-          window.location.href = `/login?next=${encodeURIComponent(
-            currentPath
-          )}`
-          return Promise.reject(error)
-        }
-
-        // Call refresh endpoint
         const response = await axiosPublic.post('/token/refresh/', {
           refresh: refreshToken,
         })
 
         const { access, refresh } = response.data
-        tokenUtils.setTokens(access, refresh)
 
-        // Retry original request with new token
+        tokenUtils.setTokens(access, refresh)
+        processQueue(access)
+
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${access}`
         }
@@ -117,6 +147,8 @@ axiosPrivate.interceptors.response.use(
         tokenUtils.clearTokens()
         window.location.href = `/login?next=${encodeURIComponent(currentPath)}`
         return Promise.reject(refreshError)
+      } finally {
+        isRefreshing = false
       }
     }
 
