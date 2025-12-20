@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { FaAppleAlt } from 'react-icons/fa'
 import { RiSunFill, RiMoonFill } from 'react-icons/ri'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import Logo from '@/public/Logo.png'
@@ -22,8 +24,9 @@ const navLinks = [
 const LandingNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-
   const { theme, toggleTheme } = useTheme()
+  const { isLoading, isAuthenticated } = useAuth()
+  const router = useRouter()
 
   const toggleOpen = () => setIsOpen(!isOpen)
 
@@ -35,6 +38,10 @@ const LandingNavbar = () => {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  if (isAuthenticated) {
+    router.replace('/feeds')
+  }
 
   return (
     <header

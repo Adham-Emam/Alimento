@@ -48,7 +48,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const { login, register } = useAuth()
+  const { isAuthenticated, login, register } = useAuth()
   const searchParams = useSearchParams()
   const router = useRouter()
   const rawNext = searchParams.get('next')
@@ -153,7 +153,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
       if (next) {
         router.replace(next)
       } else {
-        router.push('/dashboard')
+        router.push('/feeds')
       }
     } catch (err: any) {
       console.error('Auth error:', err)
@@ -183,6 +183,10 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  if (isAuthenticated) {
+    router.replace('/feeds')
   }
 
   const baseInputClasses =
