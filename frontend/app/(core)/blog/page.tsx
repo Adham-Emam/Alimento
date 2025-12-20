@@ -10,7 +10,7 @@ export const metadata = {
 const BlogPage = () => {
   return (
     <>
-      <main className="container">
+      <main className="container mt-32">
         <div className="mb-12">
           <h1 className="text-4xl font-bold tracking-tight">
             Insights & Articles
