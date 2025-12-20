@@ -105,11 +105,11 @@ class PostWriteSerializer(serializers.ModelSerializer):
         instance.save()
         if tags_names is not None:
             tags = []
-        for name in tags_names:
-            clean = name.strip()
-            if not clean:
-                continue
-            tag, _ = Tag.objects.get_or_create(name=clean)
-            tags.append(tag)
+            for name in tags_names:
+                clean = name.strip()
+                if not clean:
+                    continue
+                tag, _ = Tag.objects.get_or_create(name=clean)
+                tags.append(tag)
             instance.tags.set(tags)
         return instance
