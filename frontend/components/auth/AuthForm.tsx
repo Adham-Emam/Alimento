@@ -6,6 +6,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri'
+import { IoMdMail, IoIosLock } from 'react-icons/io'
 import { ImSpinner8 } from 'react-icons/im'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -187,7 +188,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
   }
 
   const baseInputClasses =
-    'w-full rounded-md border px-3 py-2 text-sm outline-none bg-input placeholder-muted-foreground transition focus:ring-2'
+    'w-full rounded-md border pr-3 py-2 pl-11 text-sm outline-none bg-input placeholder-muted-foreground transition focus:ring-2'
   const errorTextClasses = 'mt-1 text-xs text-destructive'
 
   return (
@@ -256,23 +257,26 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
       )}
 
       {/* EMAIL */}
-      <div>
+      <div className="space-y-2">
         <label htmlFor="email" className="block text-sm font-medium mb-1">
           Email
         </label>
-        <input
-          id="email"
-          name="email"
-          type="text"
-          value={formData.email}
-          onChange={handleChange}
-          disabled={isPageLoading}
-          className={`${baseInputClasses} ${
-            errors.email
-              ? 'border-destructive focus:ring-destructive'
-              : 'border-border focus:ring-ring'
-          }`}
-        />
+        <div className="relative">
+          <IoMdMail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+          <input
+            id="email"
+            name="email"
+            type="text"
+            value={formData.email}
+            onChange={handleChange}
+            disabled={isPageLoading}
+            className={`${baseInputClasses} ${
+              errors.email
+                ? 'border-destructive focus:ring-destructive'
+                : 'border-border focus:ring-ring'
+            }`}
+          />
+        </div>
         {errors.email && <p className={errorTextClasses}>{errors.email}</p>}
       </div>
 
@@ -282,6 +286,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
           Password
         </label>
         <div className="relative">
+          <IoIosLock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
           <input
             id="password"
             name="password"
@@ -318,6 +323,8 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
             Confirm password
           </label>
           <div className="relative">
+            <IoIosLock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+
             <input
               id="confirmPassword"
               name="confirmPassword"
