@@ -13,7 +13,7 @@ import Logo from '@/public/Logo.png'
 
 const navLinks = [
   { name: 'My Plans', url: '/plans' },
-  { name: 'Feeds', url: '/community' },
+  { name: 'Feeds', url: '/feeds' },
   { name: 'Blog', url: '/blog' },
   { name: 'Personalized Tips', url: '/ai' },
 ]

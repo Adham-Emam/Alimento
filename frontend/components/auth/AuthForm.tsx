@@ -46,13 +46,20 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
   const [errors, setErrors] = useState<FormErrorsProps>({})
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPageLoading, setIsPageLoading] = useState(false)
 
-  const { isAuthenticated, login, register } = useAuth()
+  const { isAuthenticated, isLoading, login, register } = useAuth()
   const searchParams = useSearchParams()
   const router = useRouter()
   const rawNext = searchParams.get('next')
   const next = rawNext && safeNextRegex.test(rawNext) ? rawNext : null
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace('/feeds')
+    }
+  }, [isAuthenticated, isLoading, router])
+
   useEffect(() => {
     document.title =
       mode === 'login'
@@ -133,7 +140,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
       return
     }
 
-    setIsLoading(true)
+    setIsPageLoading(true)
 
     try {
       if (mode === 'register') {
@@ -181,12 +188,8 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
 
       setErrors({ form: errorMessage })
     } finally {
-      setIsLoading(false)
+      setIsPageLoading(false)
     }
-  }
-
-  if (isAuthenticated) {
-    router.replace('/feeds')
   }
 
   const baseInputClasses =
@@ -218,7 +221,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
               type="text"
               value={formData.firstName}
               onChange={handleChange}
-              disabled={isLoading}
+              disabled={isPageLoading}
               className={`${baseInputClasses} ${
                 errors.firstName
                   ? 'border-destructive focus:ring-destructive'
@@ -244,7 +247,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
               type="text"
               value={formData.lastName}
               onChange={handleChange}
-              disabled={isLoading}
+              disabled={isPageLoading}
               className={`${baseInputClasses} ${
                 errors.lastName
                   ? 'border-destructive focus:ring-destructive'
@@ -269,7 +272,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
           type="text"
           value={formData.email}
           onChange={handleChange}
-          disabled={isLoading}
+          disabled={isPageLoading}
           className={`${baseInputClasses} ${
             errors.email
               ? 'border-destructive focus:ring-destructive'
@@ -291,7 +294,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
             type={showPassword ? 'text' : 'password'}
             value={formData.password}
             onChange={handleChange}
-            disabled={isLoading}
+            disabled={isPageLoading}
             className={`${baseInputClasses} pr-9 ${
               errors.password
                 ? 'border-destructive focus:ring-destructive'
@@ -327,7 +330,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
               type={showConfirmPassword ? 'text' : 'password'}
               value={formData.confirmPassword}
               onChange={handleChange}
-              disabled={isLoading}
+              disabled={isPageLoading}
               className={`${baseInputClasses} ${
                 errors.confirmPassword
                   ? 'border-destructive focus:ring-destructive'
@@ -359,7 +362,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
                 type="checkbox"
                 checked={formData.agree}
                 onChange={handleChange}
-                disabled={isLoading}
+                disabled={isPageLoading}
                 className="mt-1 h-4 w-4 rounded border-border bg-input text-primary focus:ring-ring"
               />
               <div className="text-xs text-muted-foreground">
@@ -392,9 +395,9 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
       <Button
         type="submit"
         className="mt-2 w-full rounded-md bg-primary text-primary-foreground font-semibold py-2.5 shadow-sm hover:brightness-95 transition duration-300"
-        disabled={isLoading}
+        disabled={isPageLoading}
       >
-        {isLoading ? (
+        {isPageLoading ? (
           <ImSpinner8 className="animate-spin" />
         ) : mode === 'login' ? (
           'Login'
