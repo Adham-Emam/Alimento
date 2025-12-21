@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.db import transaction
+from django.db.models import Q
 from .models import (
     FoodItem,
     ServingSize,
@@ -23,7 +25,7 @@ class NutritionProfileSerializer(serializers.ModelSerializer):
 
 
 class FoodItemSerializer(serializers.ModelSerializer):
-    serving_size = ServingSizeSerializer(read_only=True)
+    serving_size = ServingSizeSerializer(many=True, read_only=True)
     nutrition = NutritionProfileSerializer(read_only=True)
 
     class Meta:
@@ -61,26 +63,43 @@ class RecipeSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "description",
+            "is_public",
             "ingredients",
             "created_at",
         ]
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
-    ingredients = RecipeIngredientSerializer(many=True)
+    ingredients = RecipeIngredientSerializer(many=True, required=False)
 
     class Meta:
         model = Recipe
         fields = ["name", "description", "ingredients"]
 
     def create(self, validated_data):
-        ingredients_data = validated_data.pop("ingredients")
-        recipe = Recipe.objects.create(**validated_data)
+        ingredients_data = validated_data.pop("ingredients", [])
+        user = self.context["request"].user
+        recipe = Recipe.objects.create(user=user, **validated_data)
 
         for item in ingredients_data:
             RecipeIngredient.objects.create(recipe=recipe, **item)
 
         return recipe
+
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop("ingredients", None)
+
+        with transaction.atomic():
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+
+            if ingredients_data is not None:
+                RecipeIngredient.objects.filter(recipe=instance).delete()
+                for item in ingredients_data:
+                    RecipeIngredient.objects.create(recipe=instance, **item)
+
+        return instance
 
 
 class MealIngredientSerializer(serializers.ModelSerializer):
@@ -118,10 +137,18 @@ class MealSerializer(serializers.ModelSerializer):
 class MealCreateUpdateSerializer(serializers.ModelSerializer):
     ingredients = MealIngredientSerializer(many=True, required=False)
     recipes = serializers.PrimaryKeyRelatedField(
-        queryset=Recipe.objects.all(),
+        queryset=Recipe.objects.none(),
         many=True,
         required=False,
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            self.fields["recipes"].queryset = Recipe.objects.filter(
+                Q(is_public=True) | Q(user=request.user)
+            )
 
     class Meta:
         model = Meal
@@ -143,3 +170,22 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
             MealIngredient.objects.create(meal=meal, **item)
 
         return meal
+
+    def update(self, instance, validated_data):
+        ingredients_data = validated_data.pop("ingredients", None)
+        recipes = validated_data.pop("recipes", None)
+
+        with transaction.atomic():
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
+
+            if recipes is not None:
+                instance.recipes.set(recipes)
+
+            if ingredients_data is not None:
+                MealIngredient.objects.filter(meal=instance).delete()
+                for item in ingredients_data:
+                    MealIngredient.objects.create(meal=instance, **item)
+
+        return instance

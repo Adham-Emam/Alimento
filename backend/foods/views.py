@@ -1,4 +1,5 @@
 from rest_framework import generics, permissions
+from django.db.models import Q
 from .models import FoodItem, Recipe, Meal
 from .serializers import (
     FoodItemSerializer,
@@ -13,13 +14,17 @@ from .serializers import (
 
 
 class FoodItemListView(generics.ListAPIView):
-    queryset = FoodItem.objects.select_related("serving_size", "nutrition")
+    queryset = FoodItem.objects.prefetch_related("serving_size").select_related(
+        "nutrition"
+    )
     serializer_class = FoodItemSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class FoodItemDetailView(generics.RetrieveAPIView):
-    queryset = FoodItem.objects.select_related("serving_size", "nutrition")
+    queryset = FoodItem.objects.prefetch_related("serving_size").select_related(
+        "nutrition"
+    )
     serializer_class = FoodItemSerializer
     permission_classes = [permissions.AllowAny]
 
@@ -28,15 +33,28 @@ class FoodItemDetailView(generics.RetrieveAPIView):
 
 
 class RecipeListView(generics.ListAPIView):
-    queryset = Recipe.objects.prefetch_related("recipeingredient_set__food_item")
     serializer_class = RecipeSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        qs = Recipe.objects.prefetch_related("recipeingredient_set__food_item")
+        user = self.request.user
+        if user.is_authenticated:
+            return qs.filter(Q(is_public=True) | Q(user=user))
+        return qs.filter(is_public=True)
 
 
 class RecipeDetailView(generics.RetrieveAPIView):
-    queryset = Recipe.objects.prefetch_related("recipeingredient_set__food_item")
     serializer_class = RecipeSerializer
     permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        qs = Recipe.objects.prefetch_related("recipeingredient_set__food_item")
+        user = self.request.user
+
+        if user.is_authenticated:
+            return qs.filter(Q(is_public=True) | Q(user=user))
+        return qs.filter(is_public=True)
 
 
 class RecipeCreateView(generics.CreateAPIView):
