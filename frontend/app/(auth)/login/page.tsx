@@ -10,7 +10,7 @@ export default function LoginPage() {
         <div className="mb-10">
           <span className="text-header text-3xl font-bold flex items-center gap-2 mb-8">
             <div className="bg-background p-2 rounded-2xl">
-              <Image src={Logo} alt="Logo" width={50} height={50} priority />w
+              <Image src={Logo} alt="Logo" width={50} height={50} priority />
             </div>
             Aliménto
           </span>

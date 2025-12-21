@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { motion } from 'motion/react'
 import HeroImgLight from '@/public/hero-section-light.svg'
 import HeroImg from '@/public/hero-section.svg'
+import { IoSparklesOutline } from 'react-icons/io5'
 import { Typewriter } from 'react-simple-typewriter'
 import { useTheme } from '@/contexts/ThemeContext'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,10 @@ const Hero = () => {
         transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
         className="flex-1 text-center md:text-left"
       >
+        <span className="flex items-center justify-between gap-4 px-2 py-0.5 rounded-full bg-header/20 w-fit mb-4">
+          <IoSparklesOutline />
+          AI-Powered Nutrition
+        </span>
         <h1 className="text-3xl md:text-5xl font-extrabold">
           Your Path to Better <Typewriter words={wordList} loop cursor />
         </h1>
