@@ -51,6 +51,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Check auth status on mount
   useEffect(() => {
     const checkAuth = async () => {
+      const token = tokenUtils.getAccessToken()
+      const refresh = tokenUtils.getRefreshToken()
+      if (!token && !refresh) {
+        setUser(null)
+        setIsLoading(false)
+        return
+      }
+
       try {
         const response = await apiWithAuth.get<User>('api/auth/users/me/')
         setUser(response.data)
