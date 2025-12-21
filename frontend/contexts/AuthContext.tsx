@@ -8,7 +8,7 @@ import React, {
   ReactNode,
 } from 'react'
 import { useRouter } from 'next/navigation'
-import { api, tokenUtils } from '@/lib/api'
+import { api, apiWithAuth, tokenUtils } from '@/lib/api'
 
 interface User {
   id: number
@@ -51,24 +51,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   // Check auth status on mount
   useEffect(() => {
     const checkAuth = async () => {
-      const token = tokenUtils.getAccessToken()
-
-      if (token) {
-        try {
-          // Fetch user profile
-          const response = await api.get<User>('api/auth/users/me/', {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          setUser(response.data)
-        } catch (error) {
-          tokenUtils.clearTokens()
-          setUser(null)
-        }
+      try {
+        const response = await apiWithAuth.get<User>('api/auth/users/me/')
+        setUser(response.data)
+      } catch (error) {
+        tokenUtils.clearTokens()
+        setUser(null)
+      } finally {
+        setIsLoading(false)
       }
-
-      setIsLoading(false)
     }
-
     checkAuth()
   }, [])
 

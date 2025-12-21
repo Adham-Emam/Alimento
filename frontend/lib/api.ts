@@ -129,7 +129,7 @@ axiosPrivate.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const response = await axiosPublic.post('/token/refresh/', {
+        const response = await axiosPublic.post('/api/auth/jwt/refresh/', {
           refresh: refreshToken,
         })
 

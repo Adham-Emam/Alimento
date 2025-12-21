@@ -3,7 +3,7 @@
 'use client'
 
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri'
 import { ImSpinner8 } from 'react-icons/im'
@@ -50,15 +50,14 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
 
   const { isAuthenticated, isLoading, login, register } = useAuth()
   const searchParams = useSearchParams()
-  const router = useRouter()
   const rawNext = searchParams.get('next')
   const next = rawNext && safeNextRegex.test(rawNext) ? rawNext : null
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      router.replace('/feeds')
+      window.location.href = next || '/feeds'
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isLoading, next])
 
   useEffect(() => {
     document.title =
@@ -144,7 +143,6 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
 
     try {
       if (mode === 'register') {
-        // Register first
         await register({
           first_name: formData.firstName,
           last_name: formData.lastName,
@@ -157,11 +155,8 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
           password: formData.password,
         })
       }
-      if (next) {
-        router.replace(next)
-      } else {
-        router.push('/feeds')
-      }
+
+      window.location.href = next || '/feeds'
     } catch (err: any) {
       console.error('Auth error:', err)
 
@@ -187,7 +182,6 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
       }
 
       setErrors({ form: errorMessage })
-    } finally {
       setIsPageLoading(false)
     }
   }
