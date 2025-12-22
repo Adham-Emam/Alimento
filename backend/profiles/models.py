@@ -20,7 +20,7 @@ class UserProfile(models.Model):
         ACTIVE = "active", "Active"
 
     class Goal(models.TextChoices):
-        MAINTENANCE = "maintenance"
+        MAINTENANCE = "maintenance", "Maintenance"
         CUTTING = "cutting", "Cutting"
         BULKING = "bulking", "Bulking"
         RECOMP = "recomp", "Recomp"
@@ -81,7 +81,7 @@ class UserHealthData(models.Model):
     allergies = models.JSONField(default=list, blank=True)
     medical_conditions = models.JSONField(default=list, blank=True)
 
-    targer_macros = models.JSONField(
+    target_macros = models.JSONField(
         default=dict,
         blank=True,
         help_text="Example: { 'calories': 2000, 'protein_g': 150, 'carbs_g': 200, 'fats_g': 70 }",
