@@ -3,28 +3,36 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { FaAppleAlt } from 'react-icons/fa'
-import { RiSunFill, RiMoonFill } from 'react-icons/ri'
-import { useTheme } from '@/contexts/ThemeContext'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { useTheme } from '@/contexts/ThemeContext'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
+import { FaAppleAlt } from 'react-icons/fa'
+import { RiSunFill, RiMoonFill } from 'react-icons/ri'
+import { IoIosHome } from 'react-icons/io'
+import { FaNewspaper, FaBook, FaUser } from 'react-icons/fa'
+import { MdEmojiFoodBeverage } from 'react-icons/md'
+import { FiLogOut } from 'react-icons/fi'
 import Logo from '@/public/Logo.png'
 
 const navLinks = [
-  { name: 'My Plans', url: '/plans' },
-  { name: 'Feeds', url: '/feeds' },
-  { name: 'Blog', url: '/blog' },
-  { name: 'Personalized Tips', url: '/ai' },
+  { icon: <IoIosHome />, name: 'Dashboard', url: '/dashboard' },
+  { icon: <MdEmojiFoodBeverage />, name: 'Meal Plans', url: '/meal-plans' },
+  { icon: <FaBook />, name: 'Recipes', url: '/recipes' },
+  { icon: <FaNewspaper />, name: 'Blog', url: '/blog' },
+  { icon: <FaUser />, name: 'Profile', url: '/profile' },
 ]
 
 const CoreNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { user } = useAuth()
   const { theme, toggleTheme } = useTheme()
 
   const toggleOpen = () => setIsOpen(!isOpen)
+
+  const pathname = usePathname()
+  const { isLoading, user } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,16 +64,17 @@ const CoreNavbar = () => {
           </Link>
         </div>
 
-        <nav className="flex-1 flex justify-center items-center gap-4">
+        <nav className="flex-1 flex justify-center items-center gap-2">
           {navLinks.map((link, index) => {
             return (
-              <div key={index} className="hidden lg:flex">
-                <Link
-                  href={link.url}
-                  className="font-semibold duration-300 opacity-80 hover:opacity-100"
-                >
-                  {link.name}
-                </Link>
+              <div
+                key={index}
+                className={`font-semibold duration-300 opacity-80 hover:opacity-100 hidden lg:flex items-center gap-2 py-1 px-4 rounded-2xl ${
+                  pathname === link.url && 'bg-foreground/20'
+                }`}
+              >
+                {link.icon}
+                <Link href={link.url}>{link.name}</Link>
               </div>
             )
           })}
@@ -74,6 +83,7 @@ const CoreNavbar = () => {
         <div className="ms-auto flex  justify-between items-center gap-3">
           <Button
             size="icon"
+            aria-label="Dark Mode"
             onClick={toggleTheme}
             variant={isOpen ? 'outline' : 'default'}
           >
@@ -81,7 +91,18 @@ const CoreNavbar = () => {
           </Button>
           <Button
             size="icon"
+            aria-label="Logout"
+            variant={isOpen ? 'outline' : 'default'}
+            asChild
+          >
+            <Link href={'/logout'}>
+              <FiLogOut />
+            </Link>
+          </Button>
+          <Button
+            size="icon"
             className="rounded-full flex lg:hidden"
+            aria-label="Menu"
             onClick={toggleOpen}
             variant={isOpen ? 'outline' : 'default'}
           >

@@ -56,7 +56,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      window.location.href = next || '/feeds'
+      window.location.href = next || '/dashboard'
     }
   }, [isAuthenticated, isLoading, next])
 
@@ -157,7 +157,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
         })
       }
 
-      window.location.href = next || '/feeds'
+      window.location.href = next || '/dashboard'
     } catch (err: any) {
       console.error('Auth error:', err)
 

@@ -3,9 +3,8 @@
 import { useEffect, useState } from 'react'
 import { apiWithAuth, api } from '@/lib/api'
 import { useSearchParams, useRouter } from 'next/navigation'
-import PostCard from '@/components/feeds/PostCard'
-import RightBar from '@/components/feeds/RightBar'
-import Link from 'next/link'
+import PostCard from '@/components/recipes/PostCard'
+import RightBar from '@/components/recipes/RightBar'
 import {
   Pagination,
   PaginationContent,
@@ -34,36 +33,6 @@ interface PaginatedResponse<T> {
   previous: string | null
   results: T[]
 }
-
-// const DUMMY_POSTS: PostProps[] = [
-//   {
-//     id: '1',
-//     title: 'Best street food in Cairo?',
-//     content: 'What are your favorite street food spots?',
-//     votes: 128,
-//     author: 'Ahmed',
-//     createdAt: '2h ago',
-//     userVote: null,
-//   },
-//   {
-//     id: '2',
-//     title: 'This view never gets old',
-//     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-//     votes: 542,
-//     author: 'Mona',
-//     createdAt: '5h ago',
-//     userVote: null,
-//   },
-//   {
-//     id: '3',
-//     title: 'Any good Next.js resources?',
-//     content: 'I want advanced tutorials for App Router.',
-//     votes: 76,
-//     author: 'Youssef',
-//     createdAt: '1d ago',
-//     userVote: null,
-//   },
-// ]
 
 export default function FeedsPage() {
   const [posts, setPosts] = useState<PostProps[]>([])
@@ -100,7 +69,6 @@ export default function FeedsPage() {
   useEffect(() => {
     document.title = 'Feeds | Alimento'
     getPosts()
-    // setPosts(DUMMY_POSTS)
   }, [page, q])
 
   const goToPage = (p: number) => {

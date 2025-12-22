@@ -25,7 +25,7 @@ const LandingNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { theme, toggleTheme } = useTheme()
-  const { isLoading, isAuthenticated } = useAuth()
+  const { isAuthenticated } = useAuth()
   const router = useRouter()
 
   const toggleOpen = () => setIsOpen(!isOpen)
@@ -40,7 +40,7 @@ const LandingNavbar = () => {
   }, [])
 
   if (isAuthenticated) {
-    router.replace('/feeds')
+    router.replace('/dashboard')
   }
 
   return (
