@@ -61,9 +61,9 @@ const BlogDetailPage = () => {
     getPost()
   }, [slug])
 
-  useEffect(() => {
-    window.document.title = post?.title || 'What’s New | Nutrition App'
-  }, [post])
+  // useEffect(() => {
+  //   window.document.title = post?.title || 'What’s New | Nutrition App'
+  // }, [post])
 
   const toggleLike = async () => {
     if (!post || isLiking) return

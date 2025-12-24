@@ -6,7 +6,7 @@ import Logo from '@/public/Logo.png'
 export default function RegisterPage() {
   return (
     <main className="min-h-screen flex items-center justify-between bg-background w-full h-screen overflow-hidden">
-      <div className="flex-1 flex flex-col items-center justify-center relative overflow-hidden bg-linear-to-br from-background via-primary/40 to-accent/30 h-full">
+      <div className="flex-1 hidden md:flex flex-col items-center justify-center relative overflow-hidden bg-linear-to-br from-background via-primary/40 to-accent/30 h-full">
         <Image
           src={Logo}
           alt="Login"

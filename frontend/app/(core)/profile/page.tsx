@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import SideBar from '@/components/profile/SideBar'
 import AccountCard from '@/components/profile/AccountCard'
