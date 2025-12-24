@@ -55,7 +55,6 @@ export default function FeedsPage() {
       const res = await apiWithAuth.get<PaginatedResponse<PostProps>>(
         `api/community/posts/?page=${page}${q ? `&search=${q}` : ''}`
       )
-      console.log(res.data)
       setPosts(res.data.results)
       setCount(res.data.count)
     } catch (err: any) {

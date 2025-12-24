@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "community",
     # Third party
     "rest_framework",
+    "rest_framework.authtoken",
     "rest_framework_simplejwt.token_blacklist",
     "djoser",
     "drf_spectacular",

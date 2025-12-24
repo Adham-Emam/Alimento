@@ -11,10 +11,6 @@ const ProfilePage = () => {
   const [currentCard, setCurrentCard] = useState('Account')
   const { user } = useAuth()
 
-  useEffect(() => {
-    console.log(currentCard)
-  }, [currentCard])
-
   const getCurrentCard = () => {
     switch (currentCard) {
       case 'Account':

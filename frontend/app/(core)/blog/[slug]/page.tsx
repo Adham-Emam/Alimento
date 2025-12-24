@@ -131,7 +131,7 @@ const BlogDetailPage = () => {
 
   return (
     slug && (
-      <main className="container mx-auto py-10">
+      <main className="container mx-auto py-32">
         <BlogDetailCard
           post={post}
           toggleLike={toggleLike}
