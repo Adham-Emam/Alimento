@@ -161,7 +161,7 @@ export default function AccountCard({ user }: any) {
     }
 
     try {
-      await apiWithAuth.put('/api/auth/users/me/', payload)
+      await apiWithAuth.patch('/api/auth/users/me/', payload)
       getUserData()
       setError(null)
       setSuccess('Profile updated successfully')
