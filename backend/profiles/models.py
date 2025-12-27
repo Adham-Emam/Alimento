@@ -89,3 +89,17 @@ class UserHealthData(models.Model):
 
     def __str__(self):
         return f"{self.user.email} Health Data"
+
+
+class MealLog(models.Model):
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="meal_logs"
+    )
+    meal = models.ForeignKey(
+        "foods.Meal", on_delete=models.CASCADE, related_name="logs"
+    )
+    consumed_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"MealLog: {self.user.email} - {self.meal.id} at {self.consumed_at}"

@@ -70,15 +70,18 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
-    ingredients = RecipeIngredientSerializer(many=True, required=False)
+    ingredients = RecipeIngredientSerializer(
+        source="recipeingredient_set", many=True, required=False
+    )
 
     class Meta:
         model = Recipe
-        fields = ["name", "description", "ingredients"]
+        fields = ["name", "description", "is_public", "ingredients"]
 
     def create(self, validated_data):
-        ingredients_data = validated_data.pop("ingredients", [])
+        ingredients_data = validated_data.pop("recipeingredient_set", [])
         user = self.context["request"].user
+
         recipe = Recipe.objects.create(user=user, **validated_data)
 
         for item in ingredients_data:
@@ -87,7 +90,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop("ingredients", None)
+        ingredients_data = validated_data.pop("recipeingredient_set", None)
 
         with transaction.atomic():
             for attr, value in validated_data.items():
@@ -135,9 +138,11 @@ class MealSerializer(serializers.ModelSerializer):
 
 
 class MealCreateUpdateSerializer(serializers.ModelSerializer):
-    ingredients = MealIngredientSerializer(many=True, required=False)
+    ingredients = MealIngredientSerializer(
+        source="mealingredient_set", many=True, required=False
+    )
     recipes = serializers.PrimaryKeyRelatedField(
-        queryset=Recipe.objects.none(),
+        queryset=Recipe.objects.filter(is_public=True),
         many=True,
         required=False,
     )
@@ -160,7 +165,7 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context["request"].user
-        ingredients_data = validated_data.pop("ingredients", [])
+        ingredients_data = validated_data.pop("mealingredient_set", [])
         recipes = validated_data.pop("recipes", [])
 
         meal = Meal.objects.create(user=user, **validated_data)
@@ -172,7 +177,7 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
         return meal
 
     def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop("ingredients", None)
+        ingredients_data = validated_data.pop("mealingredient_set", None)
         recipes = validated_data.pop("recipes", None)
 
         with transaction.atomic():
