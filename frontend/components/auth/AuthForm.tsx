@@ -9,6 +9,7 @@ import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri'
 import { IoMdMail, IoIosLock } from 'react-icons/io'
 import { ImSpinner8 } from 'react-icons/im'
 import { Button } from '@/components/ui/button'
+import { useOnboarding } from '@/contexts/OnboardingContext'
 import Link from 'next/link'
 
 interface FormDataProps {
@@ -49,16 +50,21 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isPageLoading, setIsPageLoading] = useState(false)
 
-  const { isAuthenticated, isLoading, login, register } = useAuth()
+  const { isAuthenticated, isLoading: authLoading, login, register } = useAuth()
+  const { isLoading: onboardingLoading, isComplete } = useOnboarding()
   const searchParams = useSearchParams()
   const rawNext = searchParams.get('next')
   const next = rawNext && safeNextRegex.test(rawNext) ? rawNext : null
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
+    if (!authLoading && isAuthenticated) {
+      if (onboardingLoading || !isComplete) {
+        window.location.href = '/onboarding'
+        return
+      }
       window.location.href = next || '/dashboard'
     }
-  }, [isAuthenticated, isLoading, next])
+  }, [isAuthenticated, authLoading, isComplete, onboardingLoading, next])
 
   useEffect(() => {
     document.title =
@@ -157,6 +163,10 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
         })
       }
 
+      if (onboardingLoading || !isComplete) {
+        window.location.href = '/onboarding'
+        return
+      }
       window.location.href = next || '/dashboard'
     } catch (err: any) {
       console.error('Auth error:', err)
@@ -217,7 +227,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
               value={formData.firstName}
               onChange={handleChange}
               disabled={isPageLoading}
-              className={`${baseInputClasses} ${
+              className={`${baseInputClasses} px-3! ${
                 errors.firstName
                   ? 'border-destructive focus:ring-destructive'
                   : 'border-border focus:ring-ring'
@@ -243,7 +253,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
               value={formData.lastName}
               onChange={handleChange}
               disabled={isPageLoading}
-              className={`${baseInputClasses} ${
+              className={`${baseInputClasses} px-3! ${
                 errors.lastName
                   ? 'border-destructive focus:ring-destructive'
                   : 'border-border focus:ring-ring'

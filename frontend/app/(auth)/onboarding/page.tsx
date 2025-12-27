@@ -836,7 +836,7 @@ export default function Onboarding() {
                           return (
                             <>
                               <div className="bg-background/50 rounded-lg p-2">
-                                <span className="text-sm font-bold text-primary block">
+                                <span className="text-sm font-bold text-card-foreground block">
                                   {suggested.calories}
                                 </span>
                                 <span className="text-xs text-muted-foreground">
@@ -1017,7 +1017,7 @@ export default function Onboarding() {
                   </h4>
                   <div className="grid grid-cols-4 gap-2 text-center">
                     <div className="bg-background rounded-lg p-3">
-                      <span className="text-xl font-bold text-primary block">
+                      <span className="text-xl font-bold text-card-foreground block">
                         {data.health_data.target_macros.calories || 0}
                       </span>
                       <span className="text-xs text-muted-foreground">
