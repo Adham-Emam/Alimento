@@ -7,7 +7,10 @@ User = get_user_model()
 
 
 class FoodItem(models.Model):
-    name = models.CharField(max_length=255)
+    off_code = models.CharField(
+        max_length=32, unique=True, db_index=True, null=True, blank=True
+    )
+    name = models.CharField(max_length=255, db_index=True)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
 
     created_at = models.DateTimeField(auto_now_add=True)
