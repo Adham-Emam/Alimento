@@ -99,7 +99,10 @@ class MealLog(models.Model):
     meal = models.ForeignKey(
         "foods.Meal", on_delete=models.CASCADE, related_name="logs"
     )
-    consumed_at = models.DateTimeField(default=timezone.now)
+    consumed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-consumed_at"]
 
     def __str__(self):
         return f"MealLog: {self.user.email} - {self.meal.id} at {self.consumed_at}"

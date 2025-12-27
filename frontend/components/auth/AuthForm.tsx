@@ -58,7 +58,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
-      if (onboardingLoading || !isComplete) {
+      if (!isComplete) {
         window.location.href = '/onboarding'
         return
       }
@@ -163,7 +163,7 @@ const AuthForm = ({ mode }: { mode: 'login' | 'register' }) => {
         })
       }
 
-      if (onboardingLoading || !isComplete) {
+      if (!isComplete) {
         window.location.href = '/onboarding'
         return
       }
