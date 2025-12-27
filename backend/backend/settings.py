@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "foods",
     "blog",
     "community",
+    "subscriptions",
     # Third party
     "rest_framework",
     "rest_framework.authtoken",
@@ -198,3 +199,11 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL")
 FRONTEND_URL = os.environ.get("FRONTEND_URL")
+
+
+
+# Stripe
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID")  # monthly pro price
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
