@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import AuthForm from '@/components/auth/AuthForm'
@@ -39,7 +40,9 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <AuthForm mode="register" />
+        <Suspense fallback={null}>
+          <AuthForm mode="register" />
+        </Suspense>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
           Already have an account?{' '}
