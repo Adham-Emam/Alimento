@@ -75,9 +75,11 @@ class Command(BaseCommand):
                 fat = fnum(raw_fat)
 
                 food = FoodItem(
-                    off_code=code[:32],  # requires adding off_code field
+                    off_code=code[:32],
                     name=name[:255],
                     price=Decimal("0.00"),
+                    price_quantity=100,
+                    price_unit="g",
                 )
 
                 # stash nutrient info for flush()
@@ -98,10 +100,15 @@ class Command(BaseCommand):
                     "vitamin_c": fnum(row.get("vitamin-c_100g")),
                 }
 
-                if create_serving:
-                    serving_size = (row.get("serving_size") or "").strip()
-                    serving_qty = fnum(row.get("serving_quantity"))
-                    food._serving = (serving_size, serving_qty)
+                if create_serving and fi.id not in existing_serving_food_ids:
+                    servings_to_create.append(
+                        ServingSize(
+                            food=fi,
+                            description="Per 100 g",
+                            quantity=100,
+                            unit="g",
+                        )
+                    )
 
                 foods_buf.append(food)
                 kept += 1

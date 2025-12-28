@@ -27,10 +27,25 @@ class NutritionProfileSerializer(serializers.ModelSerializer):
 class FoodItemSerializer(serializers.ModelSerializer):
     serving_size = ServingSizeSerializer(many=True, read_only=True)
     nutrition = NutritionProfileSerializer(read_only=True)
+    price_per_gram_protein = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FoodItem
-        fields = ["id", "name", "price", "serving_size", "nutrition", "created_at"]
+        fields = [
+            "id",
+            "name",
+            "price",
+            "price_quantity",
+            "price_unit",
+            "serving_size",
+            "nutrition",
+            "price_per_gram_protein",
+            "created_at",
+        ]
+
+    def get_price_per_gram_protein(self, obj):
+        val = obj.price_per_gram_protein()
+        return float(val) if val is not None else None
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
