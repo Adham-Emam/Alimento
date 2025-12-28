@@ -10,7 +10,6 @@ import { FaMoneyBillWave } from 'react-icons/fa'
 const sideBarNavigation = [
   { name: 'Account', icon: <IoPersonOutline /> },
   { name: 'Goals & Preferences', icon: <GoGoal /> },
-  { name: 'Payment', icon: <FaMoneyBillWave /> },
   { name: 'Notifications', icon: <FaRegBell /> },
   { name: 'Privacy & Security', icon: <MdSecurity /> },
 ]

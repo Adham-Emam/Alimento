@@ -164,10 +164,10 @@ const DashboardHeader = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="grid grid-cols-2 lg:grid-cols-5 gap-4"
+        className="grid grid-cols-2 lg:grid-cols-5 gap-4 mt-9"
       >
         {/* Calories - Large Card */}
-        <div className="col-span-2 lg:col-span-1 rounded-2xl bg-card-foreground/50 p-5 text-background shadow-soft mt-10">
+        <div className="col-span-2 rounded-2xl bg-card-foreground/50 p-5 text-background shadow-soft">
           <div className="flex items-center justify-between mb-4">
             <span className="text-sm font-bold opacity-80">Calories</span>
             <TrendingUp className="w-5 h-5 opacity-80" />
@@ -178,7 +178,7 @@ const DashboardHeader = () => {
           <div className="text-sm opacity-80">
             of {targetMacros?.calories} kcal
           </div>
-          <div className="mt-4 h-2 bg-card rounded-full overflow-hidden">
+          <div className="h-2 bg-card rounded-full overflow-hidden">
             <div
               className="h-full bg-card-foreground rounded-full"
               style={{

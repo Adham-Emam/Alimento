@@ -16,7 +16,7 @@ const ProfilePage = () => {
       case 'Account':
         return <AccountCard user={user} />
       case 'Goals & Preferences':
-        return <GoalsCard />
+        return <GoalsCard setCurrentCard={setCurrentCard} />
       case 'Notifications':
         return <NotificationCard />
       case 'Privacy & Security':
