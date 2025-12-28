@@ -23,7 +23,6 @@ const GoalsCard = ({ setCurrentCard }: any) => {
     try {
       const res = await apiWithAuth.get<UserDataProps>('api/auth/users/me/')
       setUser(res.data)
-      console.log(res.data)
     } catch (error: any) {
       console.error(error.response?.data?.detail || 'Failed to load user data')
       setUser(null)

@@ -67,15 +67,16 @@ const CoreNavbar = () => {
         <nav className="flex-1 flex justify-center items-center gap-2">
           {navLinks.map((link, index) => {
             return (
-              <div
+              <Link
                 key={index}
-                className={`font-semibold duration-300 opacity-80 hover:opacity-100 hidden lg:flex items-center gap-2 py-1 px-4 rounded-2xl ${
-                  pathname === link.url && 'bg-foreground/20'
+                href={link.url}
+                className={`font-semibold duration-300 opacity-80 hover:bg-foreground/20 hidden lg:flex items-center gap-2 py-2 px-4 rounded-2xl dark:text-white ${
+                  pathname === link.url && 'bg-foreground/50 text-white'
                 }`}
               >
                 {link.icon}
-                <Link href={link.url}>{link.name}</Link>
-              </div>
+                {link.name}
+              </Link>
             )
           })}
         </nav>

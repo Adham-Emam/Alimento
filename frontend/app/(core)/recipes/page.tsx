@@ -115,7 +115,7 @@ export default function FeedsPage() {
   const trendingPosts = [...posts].sort((a, b) => b.score - a.score).slice(0, 4)
 
   return (
-    <main className="min-h-screen bg-background px-4 py-32">
+    <main className="min-h-[60vh] bg-background px-4 py-32">
       {/* Loading */}
       {isLoading && (
         <div className="text-center text-muted-foreground">
@@ -128,9 +128,7 @@ export default function FeedsPage() {
 
       {/* Empty */}
       {!isLoading && !error && posts.length === 0 && (
-        <div className="text-center text-muted-foreground">
-          No blog posts found.
-        </div>
+        <div className="text-center text-muted-foreground">No posts found.</div>
       )}
 
       {!isLoading && !error && posts.length > 0 && (

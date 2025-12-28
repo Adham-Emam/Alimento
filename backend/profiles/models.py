@@ -1,6 +1,9 @@
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+from foods.models import Meal
+
+User = get_user_model()
 
 
 class UserProfile(models.Model):
@@ -26,7 +29,7 @@ class UserProfile(models.Model):
         RECOMP = "recomp", "Recomp"
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
     )
 
@@ -71,7 +74,7 @@ class UserProfile(models.Model):
 
 class UserHealthData(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         related_name="health_data",
         db_index=True,
@@ -93,12 +96,8 @@ class UserHealthData(models.Model):
 
 class MealLog(models.Model):
 
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="meal_logs"
-    )
-    meal = models.ForeignKey(
-        "foods.Meal", on_delete=models.CASCADE, related_name="logs"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meal_logs")
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="logs")
     consumed_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

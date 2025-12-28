@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 
 interface NutritionBadgeProps {
-  type: 'calories' | 'protein' | 'carbs' | 'fats' | 'fiber'
+  type: 'calories' | 'protein' | 'carbs' | 'fats'
   value: number
   unit?: string
   className?: string
@@ -52,17 +52,16 @@ export function NutritionBadge({
 interface NutritionBarProps {
   current: number
   target: number
-  type: 'calories' | 'protein' | 'carbs' | 'fats' | 'fiber'
+  type: 'calories' | 'protein' | 'carbs' | 'fats'
   showLabel?: boolean
   className?: string
 }
 
 const barColors = {
   calories: 'bg-accent',
-  protein: 'bg-nutrition-protein',
-  carbs: 'bg-nutrition-carbs',
-  fats: 'bg-nutrition-fats',
-  fiber: 'bg-nutrition-fiber',
+  protein: 'bg-red-500',
+  carbs: 'bg-yellow-500',
+  fats: 'bg-blue-500',
 }
 
 export function NutritionBar({

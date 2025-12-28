@@ -254,16 +254,16 @@ class MealSerializer(serializers.ModelSerializer):
         return getattr(self, cache_key)
 
     def get_calories(self, obj):
-        return round(self._get_cached_nutrition(obj)["calories"], 1)
+        return round(self._calculate_nutrition_totals(obj)["calories"], 1)
 
     def get_protein_g(self, obj):
-        return round(self._get_cached_nutrition(obj)["protein_g"], 1)
+        return round(self._calculate_nutrition_totals(obj)["protein_g"], 1)
 
     def get_carbs_g(self, obj):
-        return round(self._get_cached_nutrition(obj)["carbs_g"], 1)
+        return round(self._calculate_nutrition_totals(obj)["carbs_g"], 1)
 
     def get_fats_g(self, obj):
-        return round(self._get_cached_nutrition(obj)["fats_g"], 1)
+        return round(self._calculate_nutrition_totals(obj)["fats_g"], 1)
 
 
 class MealCreateUpdateSerializer(serializers.ModelSerializer):

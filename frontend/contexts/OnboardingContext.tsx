@@ -434,8 +434,6 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
 
       const apiData = convertToApiFormat(data)
 
-      console.log('Sending to API:', JSON.stringify(apiData, null, 2))
-
       await apiWithAuth.patch('/api/auth/users/me/', apiData)
 
       setIsComplete(true)

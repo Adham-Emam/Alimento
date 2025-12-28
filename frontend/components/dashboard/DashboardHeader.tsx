@@ -6,18 +6,15 @@ import { useAuth } from '@/contexts/AuthContext'
 import { apiWithAuth } from '@/lib/api'
 import Link from 'next/link'
 import {
-  Plus,
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  Droplets,
   TrendingUp,
   Calendar,
 } from 'lucide-react'
 import { NutritionBar } from '@/components/dashboard/NutritionBadge'
-import { format, addDays, subDays, set } from 'date-fns'
+import { format, addDays, subDays } from 'date-fns'
 import { Button } from '@/components/ui/button'
-import { get } from 'http'
 
 interface UserDataProps {
   first_name: string
@@ -47,6 +44,16 @@ interface MacrosProps {
   carbs_g?: number
   fats_g?: number
 }
+interface MealLog {
+  id: number
+  meal: {
+    calories: number
+    protein_g: number
+    carbs_g: number
+    fats_g: number
+  }
+  consumed_at: string
+}
 
 const DashboardHeader = () => {
   const { user } = useAuth()
@@ -57,7 +64,7 @@ const DashboardHeader = () => {
   const getTargetMacros = async () => {
     try {
       const res = await apiWithAuth.get<Promise<UserDataProps>>(
-        '/api/auth/users/me'
+        '/api/auth/users/me/'
       )
       const data: any = await res.data
       setTargetMacros(data.health_data.target_macros)
@@ -68,39 +75,40 @@ const DashboardHeader = () => {
 
   const getConsumedMacros = async () => {
     try {
-      const res = await apiWithAuth.get<Promise<MacrosProps>>('/api/user/logs')
-      const data: any = await res.data
-      const calories = data.meals.reduce(
-        (acc: number, curr: any) => acc + curr.calories,
-        0
+      const res = await apiWithAuth.get<MealLog[]>(
+        `/api/user/logs?date=${format(selectedDate, 'yyyy-MM-dd')}&interval=day`
       )
-      const protein = data.meals.reduce(
-        (acc: number, curr: any) => acc + curr.protein_g,
-        0
+
+      const logs = res.data
+
+      const totals = logs.reduce(
+        (acc, log) => {
+          acc.calories += log.meal.calories / 100
+          acc.protein_g += log.meal.protein_g / 100
+          acc.carbs_g += log.meal.carbs_g / 100
+          acc.fats_g += log.meal.fats_g / 100
+          return acc
+        },
+        {
+          calories: 0,
+          protein_g: 0,
+          carbs_g: 0,
+          fats_g: 0,
+        }
       )
-      const carbs = data.meals.reduce(
-        (acc: number, curr: any) => acc + curr.carbs_g,
-        0
-      )
-      const fats = data.meals.reduce(
-        (acc: number, curr: any) => acc + curr.fats_g,
-        0
-      )
-      setConsumedMacros({
-        calories: calories,
-        protein_g: protein,
-        carbs_g: carbs,
-        fats_g: fats,
-      })
+
+      setConsumedMacros(totals)
     } catch (err: any) {
-      console.error(err?.response?.data?.detail || 'Failed to load user data')
+      throw new Error(err?.response?.data?.detail || 'Failed to load user data')
     }
   }
-
   useEffect(() => {
     getTargetMacros()
-    getConsumedMacros()
   }, [])
+
+  useEffect(() => {
+    getConsumedMacros()
+  }, [selectedDate])
 
   const greeting = () => {
     const hour = new Date().getHours()
@@ -180,7 +188,7 @@ const DashboardHeader = () => {
           </div>
           <div className="h-2 bg-card rounded-full overflow-hidden">
             <div
-              className="h-full bg-card-foreground rounded-full"
+              className="h-full bg-card-foreground rounded-full duration-300"
               style={{
                 width: `${Math.min(
                   ((consumedMacros?.calories || 0) /
