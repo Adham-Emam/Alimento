@@ -26,9 +26,22 @@ class NutritionProfileInline(admin.StackedInline):
 
 @admin.register(FoodItem)
 class FoodItemAdmin(admin.ModelAdmin):
-    list_display = ("name", "price", "created_at")
+    list_display = (
+        "name",
+        "price",
+        "created_at",
+        "price_per_gram_protein",
+        "price_quantity",
+        "price_unit",
+    )
     search_fields = ("name",)
     inlines = [ServingSizeInline, NutritionProfileInline]
+    readonly_fields = ("price_per_gram_protein",)
+
+    @admin.display(description="Price per Gram Protein")
+    def price_per_gram_protein(self, obj):
+        val = obj.price_per_gram_protein()
+        return round(float(val), 4) if val is not None else None
 
 
 # Inline for RecipeIngredient

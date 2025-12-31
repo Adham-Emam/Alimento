@@ -4,6 +4,8 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from foods.models import FoodItem, NutritionProfile, ServingSize
+
+
 import sys, csv
 
 csv.field_size_limit(sys.maxsize)
@@ -27,12 +29,18 @@ class Command(BaseCommand):
         parser.add_argument("--limit", type=int, default=0, help="0 = no limit")
         parser.add_argument("--batch", type=int, default=2000)
         parser.add_argument("--create-serving", action="store_true")
+        parser.add_argument(
+            "--require-nutrition",
+            action="store_true",
+            help="Skip products missing all macro fields (kcal/protein/carbs/fat).",
+        )
 
     def handle(self, *args, **opts):
         path = opts["path"]
         limit = opts["limit"]
         batch = opts["batch"]
         create_serving = opts["create_serving"]
+        require_nutrition = opts["require_nutrition"]
 
         processed = 0
         kept = 0
@@ -50,7 +58,25 @@ class Command(BaseCommand):
                 # --- Egypt filter ---
                 countries_tags = (row.get("countries_tags") or "").lower()
                 countries_en = (row.get("countries_en") or "").lower()
-                if ("en:egypt" not in countries_tags) and ("egypt" not in countries_en):
+
+                MENA_TAGS = {
+                    "en:egypt",
+                    "en:saudi-arabia",
+                    "en:united-arab-emirates",
+                    "en:kuwait",
+                    "en:qatar",
+                    "en:bahrain",
+                    "en:oman",
+                    "en:jordan",
+                    "en:lebanon",
+                    "en:morocco",
+                    "en:tunisia",
+                    "en:algeria",
+                }
+                if not (
+                    any(tag in countries_tags for tag in MENA_TAGS)
+                    or "egypt" in countries_en
+                ):
                     continue
 
                 code = (row.get("code") or "").strip()
@@ -68,6 +94,10 @@ class Command(BaseCommand):
                 raw_protein = (row.get("proteins_100g") or "").strip()
                 raw_carbs = (row.get("carbohydrates_100g") or "").strip()
                 raw_fat = (row.get("fat_100g") or "").strip()
+
+                if require_nutrition:
+                    if not (raw_kcal or raw_protein or raw_carbs or raw_fat):
+                        continue
 
                 kcal = fnum(raw_kcal)
                 protein = fnum(raw_protein)
@@ -100,16 +130,6 @@ class Command(BaseCommand):
                     "vitamin_c": fnum(row.get("vitamin-c_100g")),
                 }
 
-                if create_serving and fi.id not in existing_serving_food_ids:
-                    servings_to_create.append(
-                        ServingSize(
-                            food=fi,
-                            description="Per 100 g",
-                            quantity=100,
-                            unit="g",
-                        )
-                    )
-
                 foods_buf.append(food)
                 kept += 1
 
@@ -126,30 +146,44 @@ class Command(BaseCommand):
         )
 
     def _flush(self, foods, create_serving: bool):
-        from django.db import transaction
-        from foods.models import FoodItem, NutritionProfile, ServingSize
+
+        if not foods:
+            return
+
+        # Deduplicate batch by off_code (OFF can repeat codes)
+        foods_by_code = {}
+        for f in foods:
+            code = getattr(f, "off_code", None)
+            if not code:
+                continue
+            if code not in foods_by_code:
+                foods_by_code[code] = f
+
+        uniq_foods = list(foods_by_code.values())
+        codes = list(foods_by_code.keys())
 
         with transaction.atomic():
             # 1) Insert FoodItems (skip if off_code already exists)
             FoodItem.objects.bulk_create(
-                foods,
+                uniq_foods,
                 ignore_conflicts=True,
-                batch_size=len(foods),
+                batch_size=2000,
             )
 
-            # 2) Fetch all FoodItems that correspond to this batch (existing + newly created)
-            codes = [f.off_code for f in foods if getattr(f, "off_code", None)]
-            saved_qs = FoodItem.objects.filter(off_code__in=codes)
+            # 2) Fetch saved FoodItems for these codes
+            saved_qs = FoodItem.objects.filter(off_code__in=codes).only(
+                "id", "off_code"
+            )
             saved_by_code = {fi.off_code: fi for fi in saved_qs}
 
-            # 3) Find which of those FoodItems already have NutritionProfile (OneToOne)
-            existing_np_ids = set(
+            # 3) Which already have NutritionProfile
+            existing_np_food_ids = set(
                 NutritionProfile.objects.filter(food_item__in=saved_qs).values_list(
                     "food_item_id", flat=True
                 )
             )
 
-            # 4) If creating serving sizes, find which already have at least one ServingSize row
+            # 4) Which already have any ServingSize (if enabled)
             existing_serving_food_ids = set()
             if create_serving:
                 existing_serving_food_ids = set(
@@ -161,14 +195,16 @@ class Command(BaseCommand):
             nps_to_create = []
             servings_to_create = []
 
-            # 5) Build objects to insert (only missing ones)
-            for f in foods:
-                fi = saved_by_code.get(getattr(f, "off_code", None))
+            # Avoid duplicates inside THIS flush
+            np_added_food_ids = set(existing_np_food_ids)
+            serving_added_food_ids = set(existing_serving_food_ids)
+
+            for code, f in foods_by_code.items():
+                fi = saved_by_code.get(code)
                 if not fi:
                     continue
 
-                # NutritionProfile: create only if missing
-                if fi.id not in existing_np_ids:
+                if fi.id not in np_added_food_ids:
                     npd = getattr(f, "_np", {}) or {}
                     nps_to_create.append(
                         NutritionProfile(
@@ -189,39 +225,21 @@ class Command(BaseCommand):
                             vitamin_c=npd.get("vitamin_c", 0),
                         )
                     )
+                    np_added_food_ids.add(fi.id)
 
-                # ServingSize: create only if missing (optional)
-                if create_serving and fi.id not in existing_serving_food_ids:
-                    serving_size, serving_qty = getattr(f, "_serving", ("", 0))
-                    if serving_qty and serving_qty > 0 and serving_size:
-                        servings_to_create.append(
-                            ServingSize(
-                                food=fi,
-                                description=str(serving_size)[:255],
-                                quantity=float(serving_qty),
-                                unit="serving",
-                            )
+                if create_serving and fi.id not in serving_added_food_ids:
+                    servings_to_create.append(
+                        ServingSize(
+                            food=fi,
+                            description="Per 100 g",
+                            quantity=100,
+                            unit="g",
                         )
-                    else:
-                        # fallback default
-                        servings_to_create.append(
-                            ServingSize(
-                                food=fi,
-                                description="Per 100 g",
-                                quantity=100,
-                                unit="g",
-                            )
-                        )
+                    )
+                    serving_added_food_ids.add(fi.id)
 
-            # 6) Bulk insert new NutritionProfiles / ServingSizes
             if nps_to_create:
-                NutritionProfile.objects.bulk_create(
-                    nps_to_create,
-                    batch_size=len(nps_to_create),
-                )
+                NutritionProfile.objects.bulk_create(nps_to_create, batch_size=2000)
 
             if create_serving and servings_to_create:
-                ServingSize.objects.bulk_create(
-                    servings_to_create,
-                    batch_size=len(servings_to_create),
-                )
+                ServingSize.objects.bulk_create(servings_to_create, batch_size=2000)
