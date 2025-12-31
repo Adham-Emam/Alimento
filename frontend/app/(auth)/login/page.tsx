@@ -4,6 +4,12 @@ import Image from 'next/image'
 import AuthForm from '@/components/auth/AuthForm'
 import Logo from '@/public/Logo.png'
 
+export const metadata = {
+  title: 'Login | Aliménto App',
+  description:
+    'Discover new features, updates, and improvements in the nutrition app.',
+}
+
 export default function LoginPage() {
   return (
     <main className="min-h-screen flex items-center justify-between bg-background w-full h-screen overflow-hidden">

@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useAppSelector } from '@/store/hooks'
 import { FaAppleAlt } from 'react-icons/fa'
 import { RiSunFill, RiMoonFill } from 'react-icons/ri'
 import { useTheme } from '@/contexts/ThemeContext'
-import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
@@ -25,8 +25,8 @@ const LandingNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const { theme, toggleTheme } = useTheme()
-  const { isAuthenticated } = useAuth()
   const router = useRouter()
+  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth)
 
   const toggleOpen = () => setIsOpen(!isOpen)
 
@@ -39,9 +39,11 @@ const LandingNavbar = () => {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  if (isAuthenticated) {
-    router.replace('/dashboard')
-  }
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace('/dashboard')
+    }
+  }, [isAuthenticated, isLoading, router])
 
   return (
     <header

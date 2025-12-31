@@ -2,7 +2,8 @@
 import { useState, ChangeEvent, FormEvent } from 'react'
 import axios from 'axios'
 import { apiWithAuth } from '@/lib/api'
-import { useAuth } from '@/contexts/AuthContext'
+import { logout } from '@/store/slices/authSlice'
+import { useAppDispatch } from '@/store/hooks'
 import { Button } from '../ui/button'
 import {
   Accordion,
@@ -168,8 +169,7 @@ const ChangePasswordCard = ({ setSuccess, formData, handleChange }: any) => {
 const DeleteAccountCard = ({ setSuccess, formData, handleChange }: any) => {
   const [passwordError, setPasswordError] = useState<string | null>('')
   const DELETE_PHRASE = 'DELETE MY ACCOUNT'
-
-  const { logout } = useAuth()
+  const dispatch = useAppDispatch()
 
   const deleteAccount = async (e: FormEvent) => {
     e.preventDefault()
@@ -183,7 +183,7 @@ const DeleteAccountCard = ({ setSuccess, formData, handleChange }: any) => {
         },
       })
       setSuccess('Account deleted successfully')
-      logout()
+      dispatch(logout())
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
         const data = err.response?.data as any

@@ -1,11 +1,10 @@
-// components/ProtectedRoute.tsx
 'use client'
 
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
-import { useOnboarding } from '@/contexts/OnboardingContext'
+import { useAppSelector } from '@/store/hooks'
 import { ImSpinner8 } from 'react-icons/im'
+import { tokenUtils } from '@/lib/api'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -18,72 +17,26 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   fallbackUrl = '/login',
   requireOnboarding = true,
 }) => {
-  const { isAuthenticated, isLoading: authLoading } = useAuth()
-  const {
-    isComplete,
-    isLoading: onboardingLoading,
-    isChecked,
-    checkOnboardingStatus,
-  } = useOnboarding()
+  const { isAuthenticated, isLoading: authLoading } = useAppSelector(
+    (state) => state.auth
+  )
   const router = useRouter()
   const pathname = usePathname()
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      const currentPath = pathname + window.location.search
-      router.push(`${fallbackUrl}?next=${encodeURIComponent(currentPath)}`)
+    if (!tokenUtils.isAuthenticated()) {
+      router.replace(`${fallbackUrl}?next=${encodeURIComponent(pathname)}`)
     }
-  }, [isAuthenticated, authLoading, router, fallbackUrl, pathname])
+  }, [router, fallbackUrl, pathname])
 
-  // Check onboarding status once authenticated
-  useEffect(() => {
-    if (isAuthenticated && !isChecked && requireOnboarding) {
-      checkOnboardingStatus()
-    }
-  }, [isAuthenticated, isChecked, requireOnboarding, checkOnboardingStatus])
-
-  // Handle onboarding redirect
-  useEffect(() => {
-    if (
-      isAuthenticated &&
-      isChecked &&
-      !isComplete &&
-      requireOnboarding &&
-      pathname !== '/onboarding'
-    ) {
-      router.push('/onboarding')
-    }
-  }, [
-    isAuthenticated,
-    isChecked,
-    isComplete,
-    requireOnboarding,
-    pathname,
-    router,
-  ])
-
-  // Show loading state
-  if (authLoading || (requireOnboarding && !isChecked && onboardingLoading)) {
+  if (authLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <ImSpinner8 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center  fixed top-0 left-0 z-50 min-h-screen w-full">
+        <ImSpinner8 className="w-8 h-8 animate-spin text-foreground" />
       </div>
     )
   }
-  // Don't render children if not authenticated
-  if (!isAuthenticated) {
-    return null
-  }
-
-  // Don't render if onboarding is required but not complete
-  if (
-    requireOnboarding &&
-    isChecked &&
-    !isComplete &&
-    pathname !== '/onboarding'
-  ) {
-    return null
-  }
+  if (!tokenUtils.isAuthenticated()) return null
 
   return <>{children}</>
 }

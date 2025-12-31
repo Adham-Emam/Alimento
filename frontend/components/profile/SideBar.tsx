@@ -4,8 +4,8 @@ import { GoGoal } from 'react-icons/go'
 import { MdSecurity } from 'react-icons/md'
 import { Separator } from '../ui/separator'
 import { FiLogOut } from 'react-icons/fi'
-import { useAuth } from '@/contexts/AuthContext'
-import { FaMoneyBillWave } from 'react-icons/fa'
+import { useAppDispatch } from '@/store/hooks'
+import { logout } from '@/store/slices/authSlice'
 
 const sideBarNavigation = [
   { name: 'Account', icon: <IoPersonOutline /> },
@@ -15,7 +15,7 @@ const sideBarNavigation = [
 ]
 
 export default function SideBar({ currentCard, setCurrentCard }: any) {
-  const { logout } = useAuth()
+  const dispatch = useAppDispatch()
 
   return (
     <div className="flex-1">
@@ -43,7 +43,7 @@ export default function SideBar({ currentCard, setCurrentCard }: any) {
         <Separator />
         <li
           className="text-lg font-medium my-4 p-4 cursor-pointer duration-300 hover:bg-destructive/20 rounded-lg flex items-center gap-2 text-destructive"
-          onClick={logout}
+          onClick={() => dispatch(logout())}
         >
           <FiLogOut className="w-6 h-6" /> Sign Out
         </li>

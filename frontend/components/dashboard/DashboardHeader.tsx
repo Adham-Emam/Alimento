@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useAuth } from '@/contexts/AuthContext'
 import { apiWithAuth } from '@/lib/api'
+import { useAppSelector } from '@/store/hooks'
 import Link from 'next/link'
 import {
   ChevronLeft,
@@ -56,7 +56,7 @@ interface MealLog {
 }
 
 const DashboardHeader = () => {
-  const { user } = useAuth()
+  const { user } = useAppSelector((state) => state.auth)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [targetMacros, setTargetMacros] = useState<MacrosProps | null>(null)
   const [consumedMacros, setConsumedMacros] = useState<MacrosProps | null>(null)

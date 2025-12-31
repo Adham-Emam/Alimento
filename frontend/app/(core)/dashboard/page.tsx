@@ -1,11 +1,14 @@
+import { Metadata } from 'next'
 import DashboardHeader from '@/components/dashboard/DashboardHeader'
 
+export const metadata: Metadata = {
+  title: 'Dashboard | Aliménto App',
+  description:
+    'Discover new features, updates, and improvements in the nutrition app.',
+}
+
 const DashboardPage = () => {
-  return (
-    <main className="container py-32 min-h-[60vh]">
-      <DashboardHeader />
-    </main>
-  )
+  return <DashboardHeader />
 }
 
 export default DashboardPage

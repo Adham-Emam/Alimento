@@ -10,7 +10,7 @@ export default function CoreLayout({
   return (
     <ProtectedRoute>
       <CoreNavbar />
-      {children}
+      <main className="container py-32 min-h-[60vh]">{children}</main>
       <Footer />
     </ProtectedRoute>
   )
