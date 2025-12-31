@@ -26,6 +26,7 @@ const navLinks = [
 const CoreNavbar = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { theme, toggleTheme } = useTheme()
 
   const toggleOpen = () => setIsOpen(!isOpen)
@@ -33,25 +34,34 @@ const CoreNavbar = () => {
   const pathname = usePathname()
 
   useEffect(() => {
+    setMounted(true)
     const handleScroll = () => {
       setScrolled(window.scrollY > 100)
     }
 
     window.addEventListener('scroll', handleScroll)
+    handleScroll() // Set initial state
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Prevent hydration mismatch by using consistent server/client rendering
+  const navbarClasses = `fixed top-0 left-0 w-full overflow-y-hidden duration-300 transition-all lg:h-[85px] z-50 ${
+    isOpen
+      ? 'h-[450px] bg-foreground/80 bg-clip-padding backdrop-filter backdrop-blur-sm text-header-foreground'
+      : scrolled && mounted
+      ? 'h-[85px] bg-foreground/80 bg-clip-padding backdrop-filter backdrop-blur-sm text-header-foreground'
+      : 'h-[85px] bg-background text-header'
+  }`
+
   return (
-    <header
-      className={`fixed top-0 left-0 w-full overflow-y-hidden duration-300 transition-all lg:h-[68px] z-50 ${
-        isOpen
-          ? 'h-[410px] bg-foreground/80 bg-clip-padding backdrop-filter backdrop-blur-sm text-header-foreground'
-          : scrolled
-          ? 'h-[68px] bg-foreground/80 bg-clip-padding backdrop-filter backdrop-blur-sm text-header-foreground'
-          : 'h-[68px] bg-background text-header'
-      }`}
-    >
-      <div className="container flex justify-between items-center relative py-4">
+    <header className={navbarClasses}>
+      <div
+        className={`container flex justify-between items-center relative py-4 text-md  font-extrabold  ${
+          (scrolled && mounted) || isOpen
+            ? 'text-header-foreground'
+            : 'text-header'
+        }`}
+      >
         <div
           className={`text-3xl font-extrabold  ${
             scrolled || isOpen ? 'text-header-foreground' : 'text-header'

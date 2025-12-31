@@ -21,15 +21,26 @@ const Hero = () => {
         initial={{ opacity: 0, y: 100 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+        transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
         className="flex-1 text-center md:text-left"
+        style={{ willChange: 'transform, opacity' }}
       >
         <span className="flex items-center justify-between gap-4 px-2 py-0.5 rounded-full bg-header/20 w-fit mb-4">
           <IoSparklesOutline />
           AI-Powered Nutrition
         </span>
         <h1 className="text-3xl md:text-5xl font-extrabold">
-          Your Path to Better <Typewriter words={wordList} loop cursor />
+          Your Path to Better{' '}
+          <span className="inline-block min-w-[140px]">
+            <Typewriter
+              words={wordList}
+              loop
+              cursor
+              typeSpeed={100}
+              deleteSpeed={50}
+              delaySpeed={2000}
+            />
+          </span>
         </h1>
         <p className="mt-4 mb-5 text-sm md:text-lg text-muted-foreground">
           Embark on a journey where every bite nourishes your body and fuels
@@ -47,7 +58,7 @@ const Hero = () => {
         initial={{ opacity: 0, y: -100 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
+        transition={{ duration: 0.5, delay: 0.1, ease: 'easeOut' }}
         className="flex-1 hidden md:flex justify-end items-center"
       >
         <Image
@@ -55,6 +66,7 @@ const Hero = () => {
           width={488}
           height={488}
           loading="eager"
+          priority
           alt="Hero Image"
         />
       </motion.div>

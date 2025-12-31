@@ -1,3 +1,5 @@
+'use client'
+
 import { useAppDispatch } from '@/store/hooks'
 import { logout } from '@/store/slices/authSlice'
 import { ImSpinner8 } from 'react-icons/im'

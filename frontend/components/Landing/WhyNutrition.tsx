@@ -49,6 +49,7 @@ const WhyNutrition = () => {
             ease: 'anticipate',
           }}
           className="flex-1 mx-auto"
+          style={{ willChange: 'transform, opacity, filter' }}
         >
           <h2 className="text-3xl md:text-5xl font-extrabold">
             Why Nutrition Matters
@@ -84,6 +85,7 @@ const WhyNutrition = () => {
                   ease: 'easeOut',
                 }}
                 className="bg-card rounded-xl border border-ring p-6 shadow-lg flex flex-col items-center text-center"
+                style={{ willChange: 'transform, opacity, filter' }}
               >
                 <div className="bg-accent p-4 rounded-full mb-4 text-accent-foreground text-2xl">
                   {item.icon}

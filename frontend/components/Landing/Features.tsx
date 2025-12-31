@@ -82,6 +82,7 @@ const Features = () => {
                   ease: 'anticipate',
                 }}
                 className="bg-secondary py-8 px-4 rounded-xl text-center"
+                style={{ willChange: 'transform, opacity, filter' }}
               >
                 <div className="w-fit mx-auto text-accent-foreground text-5xl bg-accent rounded-full p-4 mb-8">
                   {card.icon}

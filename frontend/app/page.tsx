@@ -1,11 +1,13 @@
+import dynamic from 'next/dynamic'
 import LandingNavbar from '@/components/Landing/LandingNavbar'
 import Hero from '@/components/Landing/Hero'
-import About from '@/components/Landing/About'
-import Features from '@/components/Landing/Features'
-import HowItWorks from '@/components/Landing/HowItWorks'
-import WhyNutrition from '@/components/Landing/WhyNutrition'
-import Vision from '@/components/Landing/Vision'
 import Footer from '@/components/Landing/Footer'
+
+const About = dynamic(() => import('@/components/Landing/About'))
+const Features = dynamic(() => import('@/components/Landing/Features'))
+const HowItWorks = dynamic(() => import('@/components/Landing/HowItWorks'))
+const WhyNutrition = dynamic(() => import('@/components/Landing/WhyNutrition'))
+const Vision = dynamic(() => import('@/components/Landing/Vision'))
 
 export default function Home() {
   return (
