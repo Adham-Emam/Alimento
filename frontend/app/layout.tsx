@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { ReduxProvider } from '@/components/ReduxProvider'
 import { ThemeProvider } from '@/contexts/ThemeContext'
+import { OnboardingProvider } from '@/contexts/OnboardingContext'
 
 import './globals.css'
 
@@ -49,7 +50,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReduxProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <OnboardingProvider>{children}</OnboardingProvider>
+          </ThemeProvider>
         </ReduxProvider>
       </body>
     </html>

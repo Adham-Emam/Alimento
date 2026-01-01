@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import BlogContent from '@/components/blog/BlogContent'
 import SearchForm from '@/components/blog/SearchForm'
 
@@ -21,7 +22,9 @@ const BlogPage = () => {
         </p>
       </div>
       <SearchForm />
-      <BlogContent />
+      <Suspense fallback={<div>Loading...</div>}>
+        <BlogContent />
+      </Suspense>
     </>
   )
 }

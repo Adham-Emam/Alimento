@@ -64,40 +64,24 @@ const maxBirthDate = new Date(
 const stepValidationSchemas = {
   1: Yup.object().shape({
     profile: Yup.object().shape({
-      birth_date: Yup.string()
-        .required('Date of birth is required')
-        .test('valid-date', 'Invalid birth date', (value) => {
-          if (!value) return false
-          const date = new Date(value)
-          return !isNaN(date.getTime())
-        })
-        .test('age-range', 'Age must be less than 100 years', (value) => {
-          if (!value) return true // Skip if no value
-          const date = new Date(value)
-          return date >= minBirthDate
-        })
-        .test('minimum-age', 'You must be at least 12 years old', (value) => {
-          if (!value) return true // Skip if no value
-          const date = new Date(value)
-          return date <= maxBirthDate
-        }),
+      birth_date: Yup.date()
+        .typeError('Invalid birth date')
+        .min(minBirthDate, 'Age must be less than 100 years')
+        .max(maxBirthDate, 'You must be at least 12 years old')
+        .required('Date of birth is required'),
       sex: Yup.string()
         .oneOf(['male', 'female'], 'Please select a valid sex')
         .required('Sex is required'),
-      measurement_units: Yup.string()
-        .oneOf(['metric', 'imperial'], 'Please select valid measurement units')
-        .required('Measurement units are required'),
       height_cm: Yup.number()
-        .typeError('Height must be a number')
         .required('Height is required')
-        .min(50, 'Height must be at least 50 cm (or ~1.6 ft)')
-        .max(300, 'Height must be less than 300 cm (or ~10 ft)'),
-
+        .positive('Height must be positive')
+        .min(50, 'Height must be at least 50 cm')
+        .max(250, 'Height must be less than 250 cm'),
       weight_kg: Yup.number()
-        .typeError('Weight must be a number')
         .required('Weight is required')
-        .min(20, 'Weight must be at least 20 kg (or ~44 lbs)')
-        .max(500, 'Weight must be less than 500 kg (or ~1100 lbs)'),
+        .positive('Weight must be positive')
+        .min(20, 'Weight must be at least 20 kg')
+        .max(300, 'Weight must be less than 300 kg'),
     }),
   }),
   2: Yup.object().shape({
@@ -263,65 +247,28 @@ export default function OnboardingComponent() {
   }
 
   // Validation for each step using Yup
-  const { isStepValid, stepErrors, fieldErrors } = useMemo(() => {
+  const { isStepValid, stepErrors } = useMemo(() => {
     try {
       const schema =
         stepValidationSchemas[step as keyof typeof stepValidationSchemas]
       if (schema) {
         schema.validateSync(data, { abortEarly: false })
-        return { isStepValid: true, stepErrors: {}, fieldErrors: {} }
+        return { isStepValid: true, stepErrors: {} }
       }
-      return { isStepValid: true, stepErrors: {}, fieldErrors: {} }
+      return { isStepValid: true, stepErrors: {} }
     } catch (validationError) {
       if (validationError instanceof Yup.ValidationError) {
         const errors: Record<string, string> = {}
-        const fieldErrorsMap: Record<string, string> = {}
-
         validationError.inner.forEach((err) => {
           if (err.path) {
             errors[err.path] = err.message
-            fieldErrorsMap[err.path] = err.message
           }
         })
-
-        return {
-          isStepValid: false,
-          stepErrors: errors,
-          fieldErrors: errors, // Show all errors when validation fails
-        }
+        return { isStepValid: false, stepErrors: errors }
       }
-      return { isStepValid: false, stepErrors: {}, fieldErrors: {} }
+      return { isStepValid: false, stepErrors: {} }
     }
-  }, [step, data, submitError])
-
-  // Helper function to get fields for each step
-  const getStepFields = (stepNumber: number): string[] => {
-    switch (stepNumber) {
-      case 1:
-        return [
-          'profile.birth_date',
-          'profile.sex',
-          'profile.height_cm',
-          'profile.weight_kg',
-        ]
-      case 2:
-        return ['profile.activity_level']
-      case 3:
-        return ['profile.goal']
-      case 4:
-      case 5:
-        return []
-      case 6:
-        return [
-          'health_data.target_macros.calories',
-          'health_data.target_macros.protein_g',
-          'health_data.target_macros.carbs_g',
-          'health_data.target_macros.fats_g',
-        ]
-      default:
-        return []
-    }
-  }
+  }, [step, data])
 
   const handleToggleHealth = (
     key: 'dietary_preferences' | 'allergies' | 'medical_conditions',
@@ -501,13 +448,13 @@ export default function OnboardingComponent() {
                     }
                     className={cn(
                       'h-12',
-                      fieldErrors['profile.birth_date'] && 'border-destructive'
+                      stepErrors['profile.birth_date'] && 'border-destructive'
                     )}
                     max={new Date().toISOString().split('T')[0]}
                   />
-                  {fieldErrors['profile.birth_date'] && (
+                  {stepErrors['profile.birth_date'] && (
                     <p className="text-sm text-destructive">
-                      {fieldErrors['profile.birth_date']}
+                      {stepErrors['profile.birth_date']}
                     </p>
                   )}
                 </div>
@@ -522,22 +469,17 @@ export default function OnboardingComponent() {
                       <SelectableCard
                         key={option.id}
                         selected={data.profile.sex === option.id}
-                        onClick={() => {
-                          setProfileData({ sex: option.id })
-                        }}
+                        onClick={() => setProfileData({ sex: option.id })}
                         icon={option.icon}
                         label={option.label}
                         className={cn(
-                          fieldErrors['profile.sex'] && 'border-destructive'
+                          !data.profile.sex &&
+                            submitError &&
+                            'border-destructive'
                         )}
                       />
                     ))}
                   </div>
-                  {fieldErrors['profile.sex'] && (
-                    <p className="text-sm text-destructive">
-                      {fieldErrors['profile.sex']}
-                    </p>
-                  )}
                 </div>
 
                 {/* Measurement Units */}
@@ -581,29 +523,18 @@ export default function OnboardingComponent() {
                     <Input
                       id="height"
                       type="number"
-                      value={
-                        data.profile.height_cm
-                          ? data.profile.measurement_units === 'imperial'
-                            ? Math.round(
-                                (data.profile.height_cm / 30.48) * 10
-                              ) / 10
-                            : data.profile.height_cm
-                          : ''
+                      value={data.profile.height_cm || ''}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setProfileData({
+                          height_cm: parseInt(e.target.value) || 0,
+                        })
                       }
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        const value = parseFloat(e.target.value) || 0
-                        if (data.profile.measurement_units === 'imperial') {
-                          // Convert feet to cm (1 ft = 30.48 cm)
-                          setProfileData({
-                            height_cm: Math.round(value * 30.48),
-                          })
-                        } else {
-                          setProfileData({ height_cm: value })
-                        }
-                      }}
                       className={cn(
                         'h-12',
-                        fieldErrors['profile.height_cm'] && 'border-destructive'
+                        (!data.profile.height_cm ||
+                          data.profile.height_cm <= 0) &&
+                          submitError &&
+                          'border-destructive'
                       )}
                       min={1}
                       placeholder={
@@ -612,11 +543,6 @@ export default function OnboardingComponent() {
                           : '67'
                       }
                     />
-                    {fieldErrors['profile.height_cm'] && (
-                      <p className="text-sm text-destructive">
-                        {fieldErrors['profile.height_cm']}
-                      </p>
-                    )}
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="weight">
@@ -629,29 +555,18 @@ export default function OnboardingComponent() {
                     <Input
                       id="weight"
                       type="number"
-                      value={
-                        data.profile.weight_kg
-                          ? data.profile.measurement_units === 'imperial'
-                            ? Math.round(
-                                (data.profile.weight_kg / 0.453592) * 10
-                              ) / 10
-                            : data.profile.weight_kg
-                          : ''
+                      value={data.profile.weight_kg || ''}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setProfileData({
+                          weight_kg: parseFloat(e.target.value) || 0,
+                        })
                       }
-                      onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                        const value = parseFloat(e.target.value) || 0
-                        if (data.profile.measurement_units === 'imperial') {
-                          // Convert lbs to kg (1 lb = 0.453592 kg)
-                          setProfileData({
-                            weight_kg: Math.round(value * 0.453592 * 10) / 10,
-                          })
-                        } else {
-                          setProfileData({ weight_kg: value })
-                        }
-                      }}
                       className={cn(
                         'h-12',
-                        fieldErrors['profile.weight_kg'] && 'border-destructive'
+                        (!data.profile.weight_kg ||
+                          data.profile.weight_kg <= 0) &&
+                          submitError &&
+                          'border-destructive'
                       )}
                       min={1}
                       step="0.1"
@@ -661,11 +576,6 @@ export default function OnboardingComponent() {
                           : '154'
                       }
                     />
-                    {fieldErrors['profile.weight_kg'] && (
-                      <p className="text-sm text-destructive">
-                        {fieldErrors['profile.weight_kg']}
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -710,16 +620,12 @@ export default function OnboardingComponent() {
                     key={level.id}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    onClick={() => {
-                      setProfileData({ activity_level: level.id })
-                    }}
+                    onClick={() => setProfileData({ activity_level: level.id })}
                     className={cn(
                       'w-full rounded-2xl p-5 text-left transition-all border-2 flex items-center gap-4',
                       data.profile.activity_level === level.id
                         ? 'border-primary bg-primary/10 shadow-soft'
-                        : 'border-border bg-card hover:border-primary/50',
-                      fieldErrors['profile.activity_level'] &&
-                        'border-destructive'
+                        : 'border-border bg-card hover:border-primary/50'
                     )}
                   >
                     <span className="text-3xl">{level.icon}</span>
@@ -733,11 +639,6 @@ export default function OnboardingComponent() {
                     </div>
                   </motion.button>
                 ))}
-                {fieldErrors['profile.activity_level'] && (
-                  <p className="text-sm text-destructive text-center">
-                    {fieldErrors['profile.activity_level']}
-                  </p>
-                )}
               </div>
             )}
 
@@ -749,15 +650,12 @@ export default function OnboardingComponent() {
                     key={goal.id}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
-                    onClick={() => {
-                      setProfileData({ goal: goal.id })
-                    }}
+                    onClick={() => setProfileData({ goal: goal.id })}
                     className={cn(
                       'w-full rounded-2xl p-6 text-left transition-all border-2 flex items-center gap-4',
                       data.profile.goal === goal.id
                         ? 'border-primary bg-primary/10 shadow-soft'
-                        : 'border-border bg-card hover:border-primary/50',
-                      fieldErrors['profile.goal'] && 'border-destructive'
+                        : 'border-border bg-card hover:border-primary/50'
                     )}
                   >
                     <span className="text-4xl">{goal.icon}</span>
@@ -771,11 +669,6 @@ export default function OnboardingComponent() {
                     </div>
                   </motion.button>
                 ))}
-                {fieldErrors['profile.goal'] && (
-                  <p className="text-sm text-destructive text-center">
-                    {fieldErrors['profile.goal']}
-                  </p>
-                )}
               </div>
             )}
 
@@ -972,17 +865,14 @@ export default function OnboardingComponent() {
                         }
                         className={cn(
                           'h-12 text-lg font-semibold',
-                          fieldErrors['health_data.target_macros.calories'] &&
+                          (!data.health_data.target_macros.calories ||
+                            data.health_data.target_macros.calories <= 0) &&
+                            submitError &&
                             'border-destructive'
                         )}
                         min={1}
                         placeholder="2000"
                       />
-                      {fieldErrors['health_data.target_macros.calories'] && (
-                        <p className="text-sm text-destructive">
-                          {fieldErrors['health_data.target_macros.calories']}
-                        </p>
-                      )}
                       <span className="text-xs text-muted-foreground">
                         kcal/day
                       </span>
@@ -1006,17 +896,14 @@ export default function OnboardingComponent() {
                         }
                         className={cn(
                           'h-12 text-lg font-semibold',
-                          fieldErrors['health_data.target_macros.protein_g'] &&
+                          (!data.health_data.target_macros.protein_g ||
+                            data.health_data.target_macros.protein_g <= 0) &&
+                            submitError &&
                             'border-destructive'
                         )}
                         min={1}
                         placeholder="150"
                       />
-                      {fieldErrors['health_data.target_macros.protein_g'] && (
-                        <p className="text-sm text-destructive">
-                          {fieldErrors['health_data.target_macros.protein_g']}
-                        </p>
-                      )}
                       <span className="text-xs text-muted-foreground">
                         grams/day
                       </span>
@@ -1041,17 +928,14 @@ export default function OnboardingComponent() {
                         }
                         className={cn(
                           'h-12 text-lg font-semibold',
-                          fieldErrors['health_data.target_macros.carbs_g'] &&
+                          (!data.health_data.target_macros.carbs_g ||
+                            data.health_data.target_macros.carbs_g <= 0) &&
+                            submitError &&
                             'border-destructive'
                         )}
                         min={1}
                         placeholder="200"
                       />
-                      {fieldErrors['health_data.target_macros.carbs_g'] && (
-                        <p className="text-sm text-destructive">
-                          {fieldErrors['health_data.target_macros.carbs_g']}
-                        </p>
-                      )}
                       <span className="text-xs text-muted-foreground">
                         grams/day
                       </span>
@@ -1075,17 +959,14 @@ export default function OnboardingComponent() {
                         }
                         className={cn(
                           'h-12 text-lg font-semibold',
-                          fieldErrors['health_data.target_macros.fats_g'] &&
+                          (!data.health_data.target_macros.fats_g ||
+                            data.health_data.target_macros.fats_g <= 0) &&
+                            submitError &&
                             'border-destructive'
                         )}
                         min={1}
                         placeholder="65"
                       />
-                      {fieldErrors['health_data.target_macros.fats_g'] && (
-                        <p className="text-sm text-destructive">
-                          {fieldErrors['health_data.target_macros.fats_g']}
-                        </p>
-                      )}
                       <span className="text-xs text-muted-foreground">
                         grams/day
                       </span>

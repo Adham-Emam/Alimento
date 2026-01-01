@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import RecipeComponent from './RecipesComponent'
 
 export const metadata: Metadata = {
@@ -8,7 +9,11 @@ export const metadata: Metadata = {
 }
 
 const RecipePage = () => {
-  return <RecipeComponent />
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RecipeComponent />
+    </Suspense>
+  )
 }
 
 export default RecipePage

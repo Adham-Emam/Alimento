@@ -1,5 +1,4 @@
 'use client'
-// TODO: Fix Bad Request
 
 import { useEffect, useState } from 'react'
 import { apiWithAuth } from '@/lib/api'
@@ -56,7 +55,9 @@ const FormSchema = Yup.object().shape({
     .max(maxBirthDate, 'You must be at least 12 years old')
     .required('Birth date is required'),
 
-  sex: Yup.string().oneOf(['male', 'female']).required('Sex is required'),
+  sex: Yup.string()
+    .oneOf(['male', 'female'], 'Please select a valid sex')
+    .required('Sex is required'),
 
   height_cm: Yup.number()
     .typeError('Height must be a number')

@@ -7,6 +7,7 @@ export interface UserProps {
   is_staff: boolean
 
   profile: {
+    preferred_currency: string
     birth_date: string | null // YYYY-MM-DD
     sex: 'male' | 'female' | null
     height_cm: number | null
@@ -20,6 +21,12 @@ export interface UserProps {
     dietary_preferences: string[]
     allergies: string[]
     medical_conditions: string[]
+    target_macros: {
+      calories: number
+      protein_g: number
+      carbs_g: number
+      fats_g: number
+    }
   }
 
   created_at?: string
