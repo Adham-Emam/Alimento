@@ -4,6 +4,7 @@ import {
   AsyncThunkConfig,
 } from '@reduxjs/toolkit'
 import { api, apiWithAuth, tokenUtils } from '@/lib/api'
+import { useRouter } from 'next/navigation'
 import type { UserProps } from '@/types'
 
 interface AuthState {
@@ -81,6 +82,8 @@ const authSlice = createSlice({
       tokenUtils.clearTokens()
       state.user = null
       state.isAuthenticated = false
+      const router = useRouter()
+      router.push('/login')
     },
   },
   extraReducers: (builder) => {

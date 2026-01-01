@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { useAppSelector } from '@/store/hooks'
 
 import SideBar from '@/components/profile/SideBar'
 import AccountCard from '@/components/profile/AccountCard'
@@ -10,12 +9,11 @@ import PrivacyCard from '@/components/profile/PrivacyCard'
 
 const ProfileBody = () => {
   const [currentCard, setCurrentCard] = useState('Account')
-  const { user } = useAppSelector((state) => state.auth)
 
   const getCurrentCard = () => {
     switch (currentCard) {
       case 'Account':
-        return <AccountCard user={user} />
+        return <AccountCard />
       case 'Goals & Preferences':
         return <GoalsCard setCurrentCard={setCurrentCard} />
       case 'Notifications':

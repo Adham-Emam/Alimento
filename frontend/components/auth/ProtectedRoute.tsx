@@ -27,7 +27,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (!tokenUtils.isAuthenticated()) {
       router.replace(`${fallbackUrl}?next=${encodeURIComponent(pathname)}`)
     }
-  }, [router, fallbackUrl, pathname])
+  }, [router, fallbackUrl, pathname, isAuthenticated])
 
   if (authLoading) {
     return (
@@ -36,7 +36,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       </div>
     )
   }
-  if (!tokenUtils.isAuthenticated()) return null
 
   return <>{children}</>
 }
