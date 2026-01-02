@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "foods",
     "blog",
     "community",
+    "marketplace",
     # Third party
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
