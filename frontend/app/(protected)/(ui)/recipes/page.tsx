@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 import RecipeComponent from './RecipesComponent'
+import Loader from '@/components/ui/loader'
 
 export const metadata: Metadata = {
   title: 'Recipes | Aliménto App',
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 
 const RecipePage = () => {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<Loader />}>
       <RecipeComponent />
     </Suspense>
   )

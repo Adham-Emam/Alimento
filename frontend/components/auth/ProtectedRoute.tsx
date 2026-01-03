@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAppSelector } from '@/store/hooks'
-import { ImSpinner8 } from 'react-icons/im'
+import Loader from '../ui/loader'
 import { tokenUtils } from '@/lib/api'
 
 interface ProtectedRouteProps {
@@ -30,11 +30,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }, [router, fallbackUrl, pathname, isAuthenticated])
 
   if (authLoading) {
-    return (
-      <div className="flex items-center justify-center  fixed top-0 left-0 z-50 min-h-screen w-full">
-        <ImSpinner8 className="w-8 h-8 animate-spin text-foreground" />
-      </div>
-    )
+    return <Loader />
   }
 
   return <>{children}</>

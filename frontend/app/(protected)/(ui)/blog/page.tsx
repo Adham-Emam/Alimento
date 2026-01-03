@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import BlogContent from '@/components/blog/BlogContent'
 import SearchForm from '@/components/blog/SearchForm'
+import Loader from '@/components/ui/loader'
 
 export const metadata: Metadata = {
   title: 'What’s New | Nutrition App',
@@ -22,7 +23,7 @@ const BlogPage = () => {
         </p>
       </div>
       <SearchForm />
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loader />}>
         <BlogContent />
       </Suspense>
     </>

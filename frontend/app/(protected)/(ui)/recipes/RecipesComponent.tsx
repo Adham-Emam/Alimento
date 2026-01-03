@@ -14,7 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import { ImSpinner8 } from 'react-icons/im'
+import Loader from '@/components/ui/loader'
 
 interface PostProps {
   id: string
@@ -117,11 +117,7 @@ export default function FeedsPage() {
   return (
     <>
       {/* Loading */}
-      {isLoading && (
-        <div className="text-center text-muted-foreground">
-          <ImSpinner8 className="animate-spin text-2xl" />
-        </div>
-      )}
+      {isLoading && <Loader />}
 
       {/* Error */}
       {error && <div className="text-center text-destructive">{error}</div>}
