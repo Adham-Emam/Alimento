@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { apiWithAuth } from '@/lib/api'
-import { useAppSelector } from '@/store/hooks'
+import { checkAuth } from '@/store/slices/authSlice'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import Link from 'next/link'
 import {
   ChevronLeft,
@@ -15,28 +16,8 @@ import {
 import { NutritionBar } from '@/components/dashboard/NutritionBadge'
 import { format, addDays, subDays } from 'date-fns'
 import { Button } from '@/components/ui/button'
-
-interface UserDataProps {
-  first_name: string
-  last_name: string
-  profile: {
-    display_name: string
-    preferred_currency: string
-    birth_date: Date
-    sex: 'male' | 'female'
-    height_cm: number
-    weight_kg: number
-    measurement_units: 'metric' | 'imperial'
-    activity_level: 'sedentary' | 'light' | 'moderate' | 'active'
-    goal: 'maintenance' | 'cutting' | 'bulking' | 'recomp'
-  }
-  health_data: {
-    dietary_preferences: string
-    allergies: string
-    medical_conditions: string
-    target_macros: string
-  }
-}
+import type { UserProps } from '@/types'
+import Loader from '../ui/loader'
 
 interface MacrosProps {
   calories?: number
@@ -56,17 +37,25 @@ interface MealLog {
 }
 
 const DashboardHeader = () => {
-  const { user } = useAppSelector((state) => state.auth)
   const [selectedDate, setSelectedDate] = useState(new Date())
   const [targetMacros, setTargetMacros] = useState<MacrosProps | null>(null)
   const [consumedMacros, setConsumedMacros] = useState<MacrosProps | null>(null)
 
+  const dispatch = useAppDispatch()
+
+  const { user, isAuthenticated, isLoading } = useAppSelector(
+    (state) => state.auth
+  )
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      dispatch(checkAuth())
+    }
+  }, [dispatch, isAuthenticated])
   const getTargetMacros = async () => {
     try {
-      const res = await apiWithAuth.get<Promise<UserDataProps>>(
-        '/api/auth/users/me/'
-      )
-      const data: any = await res.data
+      const res = await apiWithAuth.get<UserProps>('/api/auth/users/me/')
+      const data: any = res.data
       setTargetMacros(data.health_data.target_macros)
     } catch (err: any) {
       console.error(err?.response?.data?.detail || 'Failed to load user data')
@@ -117,6 +106,8 @@ const DashboardHeader = () => {
     return 'Good evening'
   }
 
+  if (isLoading) return <Loader />
+
   return (
     <>
       <motion.header
@@ -133,7 +124,13 @@ const DashboardHeader = () => {
           </p>
         </div>
         <Button className="gap-2" asChild>
-          <Link href="/meal-plans">
+          <Link
+            href={
+              user?.subscription?.is_pro
+                ? '/meal-plans'
+                : '/payment/billing?plan=pro'
+            }
+          >
             <Sparkles className="w-4 h-4" />
             Generate Meal Plan
           </Link>

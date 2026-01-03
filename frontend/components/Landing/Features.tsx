@@ -9,7 +9,7 @@ import {
   FiTarget,
   FiLayout,
 } from 'react-icons/fi'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 
 interface cardProps {
   title: string

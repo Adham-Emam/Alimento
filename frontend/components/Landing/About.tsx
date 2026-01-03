@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useTheme } from '@/contexts/ThemeContext'
 import JourneyImage from '@/public/about-section.svg'
 import JourneyImageLight from '@/public/about-section-light.svg'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 
 const About = () => {
   const { theme } = useTheme()
