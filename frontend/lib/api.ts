@@ -114,7 +114,7 @@ axiosPrivate.interceptors.response.use(
         return Promise.reject(error)
       }
 
-      // 🔒 If refresh already in progress, queue request
+      //  If refresh already in progress, queue request
       if (isRefreshing) {
         return new Promise((resolve) => {
           refreshQueue.push((token: string) => {

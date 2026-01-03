@@ -38,7 +38,7 @@ const SubscribeForm = () => {
     <>
       <form
         onSubmit={handleSubmit}
-        className="flex justify-between items-center border border-ring rounded-2xl overflow-hidden p-2 bg-card-foreground text-card gap-4 w-full"
+        className="flex justify-between items-center border border-ring rounded-2xl overflow-hidden p-2 bg-background gap-4 w-full"
       >
         <input
           type="email"
@@ -51,7 +51,11 @@ const SubscribeForm = () => {
             setEmail(e.target.value)
           }
         />
-        <Button type="submit" className="rounded-full" disabled={isLoading}>
+        <Button
+          type="submit"
+          className="rounded-full border-ring"
+          disabled={isLoading}
+        >
           {isLoading ? 'Subscribing…' : 'Subscribe'}
         </Button>
       </form>

@@ -113,6 +113,12 @@ html {
 
   /* Headers */
   --header: #a8d5a2; /* soft leafy green */
+  /* Background & Text */
+  --background: #0d1110; /* deep, soft green-black */
+  --foreground: #e4e8e4; /* soft neutral white */
+
+  /* Headers */
+  --header: #a8d5a2; /* soft leafy green */
   --header-foreground: #0d1110;
 
   /* Card & Popover */
@@ -162,6 +168,26 @@ html {
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: rgba(255, 255, 255, 0.15);
   --sidebar-ring: var(--ring);
+}
+
+/* CLS Prevention */
+* {
+  box-sizing: border-box;
+}
+
+/* Reserve space for animations */
+[style*='will-change'] {
+  contain: layout style paint;
+}
+
+/* Prevent layout shifts from font loading */
+body {
+  font-display: swap;
+}
+
+/* Ensure stable navbar height */
+nav {
+  min-height: 68px;
 }
 
 @layer utilities {

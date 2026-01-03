@@ -1,6 +1,9 @@
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+from foods.models import Meal
+
+User = get_user_model()
 
 
 class UserProfile(models.Model):
@@ -20,13 +23,13 @@ class UserProfile(models.Model):
         ACTIVE = "active", "Active"
 
     class Goal(models.TextChoices):
-        MAINTENANCE = "maintenance"
+        MAINTENANCE = "maintenance", "Maintenance"
         CUTTING = "cutting", "Cutting"
         BULKING = "bulking", "Bulking"
         RECOMP = "recomp", "Recomp"
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
     )
 
@@ -71,7 +74,7 @@ class UserProfile(models.Model):
 
 class UserHealthData(models.Model):
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         related_name="health_data",
         db_index=True,
@@ -81,7 +84,7 @@ class UserHealthData(models.Model):
     allergies = models.JSONField(default=list, blank=True)
     medical_conditions = models.JSONField(default=list, blank=True)
 
-    targer_macros = models.JSONField(
+    target_macros = models.JSONField(
         default=dict,
         blank=True,
         help_text="Example: { 'calories': 2000, 'protein_g': 150, 'carbs_g': 200, 'fats_g': 70 }",
@@ -89,3 +92,16 @@ class UserHealthData(models.Model):
 
     def __str__(self):
         return f"{self.user.email} Health Data"
+
+
+class MealLog(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meal_logs")
+    meal = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="logs")
+    consumed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-consumed_at"]
+
+    def __str__(self):
+        return f"MealLog: {self.user.email} - {self.meal.id} at {self.consumed_at}"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, UserHealthData
+from .models import UserProfile, UserHealthData, MealLog
 
 
 @admin.register(UserProfile)
@@ -28,6 +28,18 @@ class UserHealthDataAdmin(admin.ModelAdmin):
         "dietary_preferences",
         "allergies",
         "medical_conditions",
+    )
+    search_fields = ("user__email",)
+    ordering = ("id",)
+
+
+@admin.register(MealLog)
+class MealLogAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "meal",
+        "consumed_at",
     )
     search_fields = ("user__email",)
     ordering = ("id",)

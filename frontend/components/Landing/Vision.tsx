@@ -71,6 +71,7 @@ const Vision = () => {
                     ease: 'easeOut',
                   }}
                   className="bg-card rounded-xl border border-ring p-6 shadow-lg flex flex-col items-center text-center"
+                  style={{ willChange: 'transform, opacity, filter' }}
                 >
                   <div className="bg-accent p-4 rounded-full mb-4 text-accent-foreground text-2xl">
                     {item.icon}
@@ -94,6 +95,7 @@ const Vision = () => {
             ease: 'easeOut',
           }}
           className="flex-1 flex justify-center lg:justify-end"
+          style={{ willChange: 'transform, opacity, filter' }}
         >
           <Image
             src={theme === 'dark' ? VisionImageLight : VisionImage}

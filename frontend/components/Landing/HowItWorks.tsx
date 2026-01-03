@@ -48,6 +48,7 @@ const HowItWorks = () => {
             ease: 'anticipate',
           }}
           className="flex-1"
+          style={{ willChange: 'transform, opacity, filter' }}
         >
           <Image
             src={theme === 'light' ? sectionImg : sectionImgLight}
@@ -69,6 +70,7 @@ const HowItWorks = () => {
                   ease: 'anticipate',
                 }}
                 className="bg-card border border-ring py-5 px-3 rounded-xl justify-self-end"
+                style={{ willChange: 'transform, opacity, filter' }}
               >
                 <span className="text-3xl md:text-5xl font-extrabold text-accent-foreground bg-accent rounded-full w-16 h-16 flex items-center justify-center mb-8">
                   {index + 1}

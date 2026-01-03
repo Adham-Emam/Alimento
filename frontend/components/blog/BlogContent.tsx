@@ -81,7 +81,7 @@ const BlogContent = () => {
 
   return (
     <>
-      <section className="mx-auto py-10">
+      <section className="min-h-[60vh] mx-auto py-10">
         {/* Loading */}
         {isLoading && (
           <div className="text-center text-muted-foreground">

@@ -1,11 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { apiWithAuth, api } from '@/lib/api'
+import { apiWithAuth } from '@/lib/api'
 import { useSearchParams, useRouter } from 'next/navigation'
-import PostCard from '@/components/feeds/PostCard'
-import RightBar from '@/components/feeds/RightBar'
-import Link from 'next/link'
+import PostCard from '@/components/recipes/PostCard'
+import RightBar from '@/components/recipes/RightBar'
 import {
   Pagination,
   PaginationContent,
@@ -15,7 +14,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import { ImSpinner8 } from 'react-icons/im'
+import Loader from '@/components/ui/loader'
 
 interface PostProps {
   id: string
@@ -34,36 +33,6 @@ interface PaginatedResponse<T> {
   previous: string | null
   results: T[]
 }
-
-// const DUMMY_POSTS: PostProps[] = [
-//   {
-//     id: '1',
-//     title: 'Best street food in Cairo?',
-//     content: 'What are your favorite street food spots?',
-//     votes: 128,
-//     author: 'Ahmed',
-//     createdAt: '2h ago',
-//     userVote: null,
-//   },
-//   {
-//     id: '2',
-//     title: 'This view never gets old',
-//     image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
-//     votes: 542,
-//     author: 'Mona',
-//     createdAt: '5h ago',
-//     userVote: null,
-//   },
-//   {
-//     id: '3',
-//     title: 'Any good Next.js resources?',
-//     content: 'I want advanced tutorials for App Router.',
-//     votes: 76,
-//     author: 'Youssef',
-//     createdAt: '1d ago',
-//     userVote: null,
-//   },
-// ]
 
 export default function FeedsPage() {
   const [posts, setPosts] = useState<PostProps[]>([])
@@ -86,7 +55,6 @@ export default function FeedsPage() {
       const res = await apiWithAuth.get<PaginatedResponse<PostProps>>(
         `api/community/posts/?page=${page}${q ? `&search=${q}` : ''}`
       )
-      console.log(res.data)
       setPosts(res.data.results)
       setCount(res.data.count)
     } catch (err: any) {
@@ -100,7 +68,6 @@ export default function FeedsPage() {
   useEffect(() => {
     document.title = 'Feeds | Alimento'
     getPosts()
-    // setPosts(DUMMY_POSTS)
   }, [page, q])
 
   const goToPage = (p: number) => {
@@ -111,7 +78,7 @@ export default function FeedsPage() {
 
   const handleVote = async (postId: string, type: 'up' | 'down') => {
     try {
-      await apiWithAuth.post(`api/community/posts/${postId}/${type}vote/`)
+      await apiWithAuth.post(`/api/community/posts/${postId}/${type}vote/`)
 
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
@@ -148,22 +115,16 @@ export default function FeedsPage() {
   const trendingPosts = [...posts].sort((a, b) => b.score - a.score).slice(0, 4)
 
   return (
-    <main className="min-h-screen bg-background px-4 py-32">
+    <>
       {/* Loading */}
-      {isLoading && (
-        <div className="text-center text-muted-foreground">
-          <ImSpinner8 className="animate-spin text-2xl" />
-        </div>
-      )}
+      {isLoading && <Loader />}
 
       {/* Error */}
       {error && <div className="text-center text-destructive">{error}</div>}
 
       {/* Empty */}
       {!isLoading && !error && posts.length === 0 && (
-        <div className="text-center text-muted-foreground">
-          No blog posts found.
-        </div>
+        <div className="text-center text-muted-foreground">No posts found.</div>
       )}
 
       {!isLoading && !error && posts.length > 0 && (
@@ -229,6 +190,6 @@ export default function FeedsPage() {
           <RightBar posts={trendingPosts} />
         </div>
       )}
-    </main>
+    </>
   )
 }

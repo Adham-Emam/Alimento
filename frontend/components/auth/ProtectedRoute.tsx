@@ -1,41 +1,36 @@
-// components/ProtectedRoute.tsx
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
-import { ImSpinner8 } from 'react-icons/im'
+import { useRouter, usePathname } from 'next/navigation'
+import { useAppSelector } from '@/store/hooks'
+import Loader from '../ui/loader'
+import { tokenUtils } from '@/lib/api'
 
 interface ProtectedRouteProps {
   children: React.ReactNode
   fallbackUrl?: string
+  requireOnboarding?: boolean
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   fallbackUrl = '/login',
+  requireOnboarding = true,
 }) => {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading: authLoading } = useAppSelector(
+    (state) => state.auth
+  )
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push(fallbackUrl)
+    if (!tokenUtils.isAuthenticated()) {
+      router.replace(`${fallbackUrl}?next=${encodeURIComponent(pathname)}`)
     }
-  }, [isAuthenticated, isLoading, router, fallbackUrl])
+  }, [router, fallbackUrl, pathname, isAuthenticated])
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <ImSpinner8 className="animate-spin" />
-      </div>
-    )
-  }
-
-  // Don't render children if not authenticated
-  if (!isAuthenticated) {
-    return null
+  if (authLoading) {
+    return <Loader />
   }
 
   return <>{children}</>

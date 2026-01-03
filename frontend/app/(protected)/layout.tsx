@@ -1,4 +1,3 @@
-import CoreNavbar from '@/components/CoreNavbar'
 import ProtectedRoute from '@/components/auth/ProtectedRoute'
 
 export default function CoreLayout({
@@ -6,10 +5,5 @@ export default function CoreLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return (
-    <ProtectedRoute>
-      <CoreNavbar />
-      {children}
-    </ProtectedRoute>
-  )
+  return <ProtectedRoute>{children}</ProtectedRoute>
 }

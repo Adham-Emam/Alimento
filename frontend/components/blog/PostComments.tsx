@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { Button } from '../ui/button'
-import { FormEvent } from 'react'
+import { FormEvent, useEffect } from 'react'
 
 interface CommentProps {
   id: number
@@ -59,7 +59,7 @@ const PostComments = ({
             >
               <div className="flex items-center justify-between mb-2">
                 <span className="font-medium">
-                  {comment.username || 'Anonymous'}
+                  {comment.username.trim() || 'Anonymous'}
                 </span>
                 <span className="text-xs text-muted-foreground">
                   {format(new Date(comment.created_at), 'PPP')}

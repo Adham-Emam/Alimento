@@ -18,6 +18,7 @@ const About = () => {
         whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
         transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
         className="flex-1"
+        style={{ willChange: 'transform, opacity, filter' }}
       >
         <h2 className="text-3xl md:text-5xl font-extrabold">
           About Our Journey to Better Health
@@ -47,6 +48,7 @@ const About = () => {
         whileInView={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
         transition={{ duration: 1, delay: 0.3, ease: 'easeOut' }}
         className="flex-1"
+        style={{ willChange: 'transform, opacity, filter' }}
       >
         <Image
           src={theme === 'dark' ? JourneyImageLight : JourneyImage}

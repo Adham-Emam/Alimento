@@ -6,24 +6,9 @@ import { notFound, useParams } from 'next/navigation'
 import BlogDetailCard from '@/components/blog/BlogDetailCard'
 import PostComments from '@/components/blog/PostComments'
 import BlogCardSkeleton from '@/components/blog/BlogCardSkeleton'
+import type { BlogPostProps } from '@/types'
 
-interface BlogPostProps {
-  id: number
-  likes: any[]
-  comments: any[]
-  is_liked: boolean
-  title: string
-  slug: string
-  excerpt: string
-  thumbnail: string | null
-  content: string
-  category: string
-  reading_time: number
-  created_at: string
-  updated_at: string
-}
-
-const BlogDetailPage = () => {
+const BlogDetailComponent = () => {
   const params = useParams<{ slug: string }>()
   const slug = params?.slug
   const [post, setPost] = useState<BlogPostProps | null>(null)
@@ -60,10 +45,6 @@ const BlogDetailPage = () => {
   useEffect(() => {
     getPost()
   }, [slug])
-
-  useEffect(() => {
-    window.document.title = post?.title || 'What’s New | Nutrition App'
-  }, [post])
 
   const toggleLike = async () => {
     if (!post || isLiking) return
@@ -131,7 +112,7 @@ const BlogDetailPage = () => {
 
   return (
     slug && (
-      <main className="container mx-auto py-10">
+      <>
         <BlogDetailCard
           post={post}
           toggleLike={toggleLike}
@@ -143,9 +124,9 @@ const BlogDetailPage = () => {
           setComment={setComment}
           handleSubmit={handleCommentSubmit}
         />
-      </main>
+      </>
     )
   )
 }
 
-export default BlogDetailPage
+export default BlogDetailComponent
