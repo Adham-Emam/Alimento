@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     profile = UserProfileSerializer(source="userprofile", required=False)
     health_data = UserHealthDataSerializer(required=False)
-    subscription = UserSubscriptionSerializer(source="subscription", read_only=True)
+    subscription = UserSubscriptionSerializer(read_only=True)
 
     class Meta:
         model = User
@@ -26,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "profile",
             "health_data",
+            "subscription",
         )
         read_only_fields = ("id", "email", "date_joined")
 

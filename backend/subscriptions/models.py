@@ -3,6 +3,7 @@ from django.db import models
 
 User = get_user_model()
 
+
 class UserSubscription(models.Model):
     user = models.OneToOneField(
         User,
@@ -10,6 +11,7 @@ class UserSubscription(models.Model):
         related_name="subscription",
     )
     is_pro = models.BooleanField(default=False)
+    is_coach = models.BooleanField(default=False)
     current_period_end = models.DateTimeField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

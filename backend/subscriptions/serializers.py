@@ -5,4 +5,4 @@ from .models import UserSubscription
 class UserSubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserSubscription
-        fields = ["is_pro", "current_period_end"]
+        fields = ["is_pro", "is_coach", "current_period_end"]

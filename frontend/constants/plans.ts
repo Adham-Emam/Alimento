@@ -29,7 +29,7 @@ export const plans = [
     id: 'coach',
     title: 'Become a Coach',
     subtitle: 'Monetize your knowledge and coach others',
-    price: '$25.99 / month',
+    price: '$24.99 / month',
     features: [
       { label: 'Create a public coach profile', available: true },
       { label: 'Accept coaching requests', available: true },
