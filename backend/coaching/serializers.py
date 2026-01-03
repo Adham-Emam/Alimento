@@ -75,6 +75,5 @@ class CoachProfileSerializer(serializers.ModelSerializer):
             "languages",
             "monthly_rate",
             "created_at",
-            "updated_at",
         ]
         read_only_fields = ["user", "created_at", "updated_at"]
