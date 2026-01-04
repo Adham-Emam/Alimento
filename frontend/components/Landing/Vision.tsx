@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import { useTheme } from '@/contexts/ThemeContext'
 import { FiTarget, FiUsers } from 'react-icons/fi'
 import { RiLeafLine } from 'react-icons/ri'

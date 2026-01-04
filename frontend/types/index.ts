@@ -29,6 +29,12 @@ export interface UserProps {
     }
   }
 
+  subscription: {
+    current_period_end: string
+    is_coach: boolean
+    is_pro: boolean
+  }
+
   created_at?: string
   updated_at?: string
 }

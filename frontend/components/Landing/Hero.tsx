@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import HeroImgLight from '@/public/hero-section-light.svg'
 import HeroImg from '@/public/hero-section.svg'
 import { IoSparklesOutline } from 'react-icons/io5'

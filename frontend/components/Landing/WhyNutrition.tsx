@@ -1,7 +1,7 @@
 'use client'
 
 import { FiZap, FiHeart, FiClock, FiSmile } from 'react-icons/fi'
-import { motion } from 'motion/react'
+import { motion } from 'framer-motion'
 import React from 'react'
 
 interface HighlightProps {

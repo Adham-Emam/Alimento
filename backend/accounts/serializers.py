@@ -4,6 +4,7 @@ from django.core.validators import validate_email
 from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer as DjoserUserCreateSerializer
 from profiles.serializers import UserProfileSerializer, UserHealthDataSerializer
+from subscriptions.serializers import UserSubscriptionSerializer
 
 User = get_user_model()
 
@@ -13,6 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     profile = UserProfileSerializer(source="userprofile", required=False)
     health_data = UserHealthDataSerializer(required=False)
+    subscription = UserSubscriptionSerializer(read_only=True)
 
     class Meta:
         model = User
@@ -24,6 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
             "date_joined",
             "profile",
             "health_data",
+            "subscription",
         )
         read_only_fields = ("id", "email", "date_joined")
 

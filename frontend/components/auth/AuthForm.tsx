@@ -105,6 +105,12 @@ export default function AuthForm({ mode }: { mode: 'login' | 'register' }) {
       }
       router.replace(next || '/dashboard')
     } catch (err: any) {
+      // Thunk rejectWithValue
+      if (typeof err === 'string') {
+        setErrors({ _form: err })
+        return
+      }
+
       if (err.response?.data) {
         const data = err.response.data
 
