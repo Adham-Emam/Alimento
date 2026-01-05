@@ -1,16 +1,56 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from decimal import Decimal
+from django.conf import settings
 
 
 User = get_user_model()
 
 
 class FoodItem(models.Model):
-    name = models.CharField(max_length=255)
+    class PriceUnit(models.TextChoices):
+        G = "g", "Gram"
+        ML = "ml", "Milliliter"
+        SERVING = "serving", "Serving"
+        PIECE = "piece", "Piece"
+
+    off_code = models.CharField(
+        max_length=32, unique=True, db_index=True, null=True, blank=True
+    )
+    name = models.CharField(max_length=255, db_index=True)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
 
+    price_quantity = models.FloatField(default=100)
+    price_unit = models.CharField(
+        max_length=10, choices=PriceUnit.choices, default=PriceUnit.G
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def price_per_gram_protein(self):
+
+        nut = getattr(self, "nutrition", None)
+        if not nut or not nut.protein or nut.protein <= 0:
+            return None
+
+        price_amount = Decimal(str(self.price or 0))
+        if price_amount <= 0:
+            return None
+        qty = Decimal(str(self.price_quantity or 0))
+        if qty <= 0:
+            return None
+
+        if self.price_unit == self.PriceUnit.G:
+            grams = qty
+        elif self.price_unit == self.PriceUnit.ML:
+            grams = qty
+        else:
+            return None
+        protein_100g = Decimal(str(nut.protein))
+        protein_in_priced_qty = (protein_100g * grams) / Decimal("100")
+        if protein_in_priced_qty <= 0:
+            return None
+        return price_amount / protein_in_priced_qty
 
     def __str__(self):
         return self.name
@@ -47,6 +87,8 @@ class NutritionProfile(models.Model):
     food_item = models.OneToOneField(
         FoodItem, on_delete=models.CASCADE, related_name="nutrition", primary_key=True
     )
+
+    nutrition_basis = models.CharField(max_length=20, default="per_100g")
 
     # Macronutrients (grams)
     calories = models.FloatField(default=0)

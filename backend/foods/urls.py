@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     FoodItemListView,
     FoodItemDetailView,
+    FoodItemCreateView,
     RecipeListView,
     RecipeDetailView,
     RecipeCreateView,
@@ -16,6 +17,7 @@ urlpatterns = [
     # Food items
     path("", FoodItemListView.as_view(), name="food-list"),
     path("<int:pk>/", FoodItemDetailView.as_view(), name="food-detail"),
+    path("create/", FoodItemCreateView.as_view(), name="food-create"),
     # Recipes
     path("recipes/", RecipeListView.as_view(), name="recipe-list"),
     path("recipes/<int:pk>/", RecipeDetailView.as_view(), name="recipe-detail"),

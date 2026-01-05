@@ -54,3 +54,45 @@ export interface BlogPostProps {
   created_at: string
   updated_at: string
 }
+
+export interface FoodItemProps {
+  id: number
+  name: string
+  price: string
+  price_quantity: number
+  price_unit: string
+  price_per_gram_protein: number
+  serving_size: [
+    {
+      description: string
+      quantity: number
+      unit: string
+    }
+  ]
+  nutrition: {
+    nutrition_basis: string
+    calories: number
+    protein: number
+    protein_type: 'vegan' | 'dairy' | 'meat' | 'other'
+    carbohydrates: number
+    fats: number
+    fiber: number
+    sugar: number
+    sodium: number
+    iron: number
+    calcium: number
+    potassium: number
+    zinc: number
+    magnesium: number
+    vitamin_a: number
+    vitamin_c: number
+  }
+  created_at: string
+}
+
+export interface PaginationProps<T> {
+  count: number
+  next: string | null
+  previous: string | null
+  results: T[]
+}

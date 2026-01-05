@@ -1,5 +1,8 @@
 from rest_framework import generics, permissions
 from django.db.models import Q
+from rest_framework.filters import SearchFilter
+from rest_framework.pagination import CursorPagination
+
 from .models import FoodItem, Recipe, Meal
 from .serializers import (
     FoodItemSerializer,
@@ -11,6 +14,11 @@ from .serializers import (
 
 
 # FoodItems Endpoints
+class FoodItemCursorPagination(CursorPagination):
+    page_size = 30
+    ordering = "-id"
+    page_size_query_param = "page_size"
+    max_page_size = 100
 
 
 class FoodItemListView(generics.ListAPIView):
@@ -18,7 +26,10 @@ class FoodItemListView(generics.ListAPIView):
         "nutrition"
     )
     serializer_class = FoodItemSerializer
+    pagination_class = FoodItemCursorPagination
     permission_classes = [permissions.AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ["name", "nutrition__protein_type"]
 
 
 class FoodItemDetailView(generics.RetrieveAPIView):
@@ -27,6 +38,11 @@ class FoodItemDetailView(generics.RetrieveAPIView):
     )
     serializer_class = FoodItemSerializer
     permission_classes = [permissions.AllowAny]
+
+
+class FoodItemCreateView(generics.CreateAPIView):
+    serializer_class = FoodItemSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 # Recipe Endpoints
