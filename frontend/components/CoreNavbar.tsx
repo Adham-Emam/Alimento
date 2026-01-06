@@ -36,7 +36,7 @@ const navLinks = [
         title: 'Food Items',
         description:
           'Individual raw ingredients such as eggs, cheese, fish, vegetables, and dairy used as building blocks for recipes.',
-        url: '/food/item',
+        url: '/food/items',
       },
       {
         title: 'Recipes',
