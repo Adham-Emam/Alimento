@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useAppSelector } from '@/store/hooks'
+import { useAppSelector } from '@/redux/hooks'
 import { FaAppleAlt } from 'react-icons/fa'
 import { RiSunFill, RiMoonFill } from 'react-icons/ri'
 import { useTheme } from '@/contexts/ThemeContext'

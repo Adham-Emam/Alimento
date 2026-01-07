@@ -1,15 +1,11 @@
 import { Metadata } from 'next'
 import { api } from '@/lib/api'
-import type { BlogPostProps } from '@/types'
-import BlogDetailComponent from './PostDetailComponent'
-
-interface PageProps {
-  params: Promise<{ slug: string }>
-}
+import type { BlogPostProps, BlogPageProps } from '@/types'
+import BlogDetailComponent from '../components/PostDetailComponent'
 
 export const generateMetadata = async ({
   params,
-}: PageProps): Promise<Metadata> => {
+}: BlogPageProps): Promise<Metadata> => {
   const { slug } = await params
   const post = await api.get<BlogPostProps>(`/api/blog/posts/${slug}`)
 

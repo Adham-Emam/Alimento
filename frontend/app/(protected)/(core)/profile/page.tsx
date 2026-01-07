@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import ProfileBody from './ProfileBody'
+import ProfileBody from './components/ProfileBody'
 
 export const metadata: Metadata = {
   title: 'Profile | Aliménto App',

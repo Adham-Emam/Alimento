@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import DashboardHeader from '@/components/dashboard/DashboardHeader'
+import DashboardHeader from '@/app/(protected)/(core)/dashboard/components/DashboardHeader'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Aliménto App',

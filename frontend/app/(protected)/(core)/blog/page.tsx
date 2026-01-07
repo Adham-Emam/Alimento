@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import BlogContent from '@/components/blog/BlogContent'
-import SearchForm from '@/components/blog/SearchForm'
+import BlogContent from '@/app/(protected)/(core)/blog/components/BlogContent'
+import SearchForm from '@/app/(protected)/(core)/blog/components/SearchForm'
 import Loader from '@/components/ui/loader'
 
 export const metadata: Metadata = {

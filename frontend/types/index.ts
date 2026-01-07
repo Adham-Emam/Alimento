@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react'
+
 export interface UserProps {
   id: number
   email: string
@@ -145,4 +147,44 @@ export interface PaginationProps<T> {
   next: string | null
   previous: string | null
   results: T[]
+}
+
+export interface SelectableCardProps {
+  selected: boolean
+  onClick: () => void
+  icon: string
+  label: string
+  description?: string
+  className?: string
+}
+
+export interface AuthState {
+  user: UserProps | null
+  isLoading: boolean
+  isAuthenticated: boolean
+}
+
+export interface PostProps {
+  id: string
+  title: string
+  content?: string
+  image?: string
+  score: number
+  author: string
+  createdAt: string
+  userVote: 'up' | 'down' | null
+}
+
+export interface FoodItemPopupProps {
+  item: FoodItemProps | null
+  onClose: () => void
+}
+
+export interface BlogPageProps {
+  params: Promise<{ slug: string }>
+}
+
+export interface CreateFoodItemPopupProps {
+  isOpen: boolean
+  setIsOpen: Dispatch<SetStateAction<boolean>>
 }

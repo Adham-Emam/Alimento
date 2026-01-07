@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
-import FoodItemHeader from '@/components/food/items/FoodItemHeader'
-import FoodItemsComponent from '@/components/food/items/FoodItemsComponent'
+import FoodItemHeader from './components/FoodItemHeader'
+import FoodItemsComponent from './components/FoodItemsComponent'
 
 export const metadata: Metadata = {
   title: 'Food Items | Aliménto App',

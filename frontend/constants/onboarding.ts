@@ -3,7 +3,7 @@ import {
   MeasurementUnitsType,
   ActivityLevelType,
   GoalType,
-} from '@/store/slices/onboardingSlice'
+} from '@/types/onboarding'
 
 const currencies = [
   { id: 'EGP', label: 'EGP (E£)', symbol: 'E£' },

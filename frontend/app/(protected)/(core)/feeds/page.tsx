@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import FeedsComponent from './FeedsComponent'
+import FeedsComponent from './components/FeedsComponent'
 import Loader from '@/components/ui/loader'
 
 export const metadata: Metadata = {

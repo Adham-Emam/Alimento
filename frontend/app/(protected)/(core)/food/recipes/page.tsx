@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import RecipesComponent from '@/components/food/recipes/RecipesComponent'
+import RecipesComponent from './components/RecipesComponent'
 import Loader from '@/components/ui/loader'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'

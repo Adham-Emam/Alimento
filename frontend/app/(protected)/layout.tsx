@@ -1,4 +1,4 @@
-import ProtectedRoute from '@/components/auth/ProtectedRoute'
+import ProtectedRoute from './ProtectedRoute'
 
 export default function CoreLayout({
   children,

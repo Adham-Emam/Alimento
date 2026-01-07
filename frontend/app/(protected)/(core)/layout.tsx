@@ -1,4 +1,4 @@
-import CoreNavbar from '@/components/CoreNavbar'
+import CoreNavbar from './CoreNavbar'
 import Footer from '@/components/Landing/Footer'
 
 export default function CoreLayout({

@@ -1,8 +1,9 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import AuthForm from '@/components/auth/AuthForm'
+import AuthForm from '../components/AuthForm'
 import Logo from '@/public/Logo.png'
+import Loader from '@/components/ui/loader'
 
 export const metadata = {
   title: 'Login | Aliménto App',
@@ -27,7 +28,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<Loader />}>
           <AuthForm mode="login" />
         </Suspense>
 

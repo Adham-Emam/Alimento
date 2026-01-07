@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { ReduxProvider } from '@/components/ReduxProvider'
 import { ThemeProvider } from '@/contexts/ThemeContext'
-import { OnboardingProvider } from '@/contexts/OnboardingContext'
+import { OnboardingProvider } from '@/components/OnboardingProvider'
 
 import './globals.css'
 

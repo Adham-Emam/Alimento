@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import PlansComponent from '@/components/plans/PlansComponent'
+import PlansComponent from '@/app/(protected)/(core)/plans/components/PlansComponent'
 
 export const metadata: Metadata = {
   title: 'Plans | Aliménto App',
