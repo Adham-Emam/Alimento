@@ -8,7 +8,7 @@ import FoodItemCard from './FoodItemCard'
 import FoodItemPopupCard from './FoodItemPopupCard'
 import axios from 'axios'
 import { AnimatePresence } from 'framer-motion'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import {
   Pagination,
   PaginationContent,
@@ -135,9 +135,13 @@ export default function FoodItemsComponent() {
             placeholder="Search for food"
             className="flex-1 outline-none"
           />
-          <button type="submit">
+          <Button
+            size="icon"
+            className="bg-background duration-300 dark:text-white rounded-full"
+            type="submit"
+          >
             <FaMagnifyingGlass />
-          </button>
+          </Button>
         </form>
 
         <div className="mt-4 flex items-center gap-3 ">

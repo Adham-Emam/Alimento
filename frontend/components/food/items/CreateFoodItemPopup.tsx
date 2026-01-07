@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
-import { Button } from '../ui/button'
+import { Button } from '../../ui/button'
 import type { FoodItemProps } from '@/types'
 import { useState, useEffect } from 'react'
 import { apiWithAuth } from '@/lib/api'
@@ -63,18 +63,11 @@ export default function CreateFoodItemPopup({ isOpen, setIsOpen }: Props) {
   const [success, setSuccess] = useState<string | null>(null)
 
   const initialValues: FoodItemProps = {
-    id: 0,
     name: '',
-    price: '0',
+    price: 0,
     price_quantity: 0,
     price_unit: '',
-    serving_size: [
-      {
-        description: '',
-        quantity: 0,
-        unit: '',
-      },
-    ],
+    serving_size: [{ description: '', quantity: 0, unit: '' }],
     nutrition: {
       nutrition_basis: '',
       calories: 0,
@@ -93,14 +86,13 @@ export default function CreateFoodItemPopup({ isOpen, setIsOpen }: Props) {
       vitamin_a: 0,
       vitamin_c: 0,
     },
-    price_per_gram_protein: 0,
-    created_at: new Date().toISOString(),
   }
 
   const handleSubmit = async (values: FoodItemProps) => {
     try {
       setError(null)
       setSuccess(null)
+      console.log(values)
       await apiWithAuth.post('/api/foods/create/', values)
       setSuccess('Food item added successfully!')
       setIsOpen(false)
@@ -153,34 +145,37 @@ export default function CreateFoodItemPopup({ isOpen, setIsOpen }: Props) {
             <X className="w-5 h-5" />
           </button>
         </div>
-
         {error && <p className="text-red-500 text-sm">{error}</p>}
         {success && <p className="text-green-500 text-sm">{success}</p>}
-
         <Formik
           initialValues={initialValues}
           validationSchema={FoodItemSchema}
           onSubmit={handleSubmit}
         >
-          {({ values }) => (
+          {({ values, setFieldValue }) => (
             <Form className="space-y-4">
-              {/* Name & Price */}
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-medium">Name</label>
+                <Field name="name" className="w-full p-2 border rounded" />
+                <ErrorMessage
+                  name="name"
+                  component="div"
+                  className="text-red-500 text-xs"
+                />
+              </div>
+
+              {/* Price & Quantity */}
               <div className="flex gap-2">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium">Name</label>
-                  <Field name="name" className="w-full p-2 border rounded" />
-                  <ErrorMessage
-                    name="name"
-                    component="div"
-                    className="text-red-500 text-xs"
-                  />
-                </div>
                 <div className="flex-1">
                   <label className="block text-sm font-medium">Price</label>
                   <Field
                     name="price"
                     type="number"
                     className="w-full p-2 border rounded"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setFieldValue('price', Number(e.target.value))
+                    }
                   />
                   <ErrorMessage
                     name="price"
@@ -188,10 +183,7 @@ export default function CreateFoodItemPopup({ isOpen, setIsOpen }: Props) {
                     className="text-red-500 text-xs"
                   />
                 </div>
-              </div>
 
-              {/* Price quantity/unit */}
-              <div className="flex gap-2">
                 <div className="flex-1">
                   <label className="block text-sm font-medium">Quantity</label>
                   <Field
@@ -205,9 +197,13 @@ export default function CreateFoodItemPopup({ isOpen, setIsOpen }: Props) {
                     className="text-red-500 text-xs"
                   />
                 </div>
+
                 <div className="flex-1">
                   <label className="block text-sm font-medium">Unit</label>
-                  <Select>
+                  <Select
+                    value={values.price_unit}
+                    onValueChange={(val) => setFieldValue('price_unit', val)}
+                  >
                     <SelectTrigger className="w-full p-2 bg-transparent! h-[42px]! border-foreground rounded">
                       <SelectValue placeholder="Select a Unit" />
                     </SelectTrigger>
@@ -277,16 +273,21 @@ export default function CreateFoodItemPopup({ isOpen, setIsOpen }: Props) {
               <div>
                 <h3 className="font-semibold mb-2">Nutrition</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {Object.keys(initialValues.nutrition).map((key) => (
+                  {Object.keys(values.nutrition).map((key) => (
                     <div key={key}>
                       <label className="block text-sm font-medium">{key}</label>
-                      {key.includes('protein_type') ? (
-                        <Select>
+                      {key === 'protein_type' ? (
+                        <Select
+                          value={values.nutrition.protein_type}
+                          onValueChange={(val) =>
+                            setFieldValue('nutrition.protein_type', val)
+                          }
+                        >
                           <SelectTrigger className="w-full p-2 bg-transparent! h-[42px]! border-foreground rounded">
-                            <SelectValue placeholder="Select a Unit" />
+                            <SelectValue placeholder="Select Type" />
                           </SelectTrigger>
                           <SelectContent className="z-300">
-                            <SelectGroup className="bg-background">
+                            <SelectGroup>
                               <SelectItem value="vegan">Vegan</SelectItem>
                               <SelectItem value="meat">Meat</SelectItem>
                               <SelectItem value="dairy">Dairy</SelectItem>
@@ -297,7 +298,7 @@ export default function CreateFoodItemPopup({ isOpen, setIsOpen }: Props) {
                       ) : (
                         <Field
                           name={`nutrition.${key}`}
-                          type={key.includes('type') ? 'text' : 'number'}
+                          type="number"
                           className="w-full p-2 border rounded"
                         />
                       )}

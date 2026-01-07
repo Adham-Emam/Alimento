@@ -1,20 +1,18 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import RecipeComponent from './RecipesComponent'
+import FeedsComponent from './FeedsComponent'
 import Loader from '@/components/ui/loader'
 
 export const metadata: Metadata = {
-  title: 'Recipes | Aliménto App',
+  title: 'Feeds | Aliménto App',
   description:
     'Discover new features, updates, and improvements in the nutrition app.',
 }
 
-const RecipePage = () => {
+export default function FeedsPage() {
   return (
     <Suspense fallback={<Loader />}>
-      <RecipeComponent />
+      <FeedsComponent />
     </Suspense>
   )
 }
-
-export default RecipePage

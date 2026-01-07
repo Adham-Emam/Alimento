@@ -56,12 +56,12 @@ export interface BlogPostProps {
 }
 
 export interface FoodItemProps {
-  id: number
+  id?: number
   name: string
-  price: string
+  price: number
   price_quantity: number
   price_unit: string
-  price_per_gram_protein: number
+  price_per_gram_protein?: number
   serving_size: [
     {
       description: string
@@ -87,6 +87,56 @@ export interface FoodItemProps {
     vitamin_a: number
     vitamin_c: number
   }
+  created_at?: string
+}
+
+export interface Nutrition {
+  nutrition_basis: string
+  calories: number
+  protein: number
+  protein_type: string
+  carbohydrates: number
+  fats: number
+  fiber: number
+  sugar: number
+  sodium: number
+  iron: number
+  calcium: number
+  potassium: number
+  zinc: number
+  magnesium: number
+  vitamin_a: number
+  vitamin_c: number
+}
+
+export interface FoodItem {
+  id: number
+  name: string
+  price: string
+  price_quantity: number
+  price_unit: string
+  nutrition: Nutrition
+  created_at: string
+}
+
+export interface Ingredient {
+  id: number
+  food_item: FoodItem
+  quantity: number
+  unit: string
+}
+
+export interface Recipe {
+  id: string
+  name: string
+  slug: string
+  description: string
+  is_public: boolean
+  ingredients: Ingredient[]
+  calories: string
+  protein_g: string
+  carbs_g: string
+  fats_g: string
   created_at: string
 }
 

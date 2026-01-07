@@ -50,27 +50,26 @@ class FoodItemCreateView(generics.CreateAPIView):
 
 class RecipeListView(generics.ListAPIView):
     serializer_class = RecipeSerializer
-    permission_classes = [permissions.AllowAny]
+    pagination_class = FoodItemCursorPagination
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ["name"]
 
     def get_queryset(self):
-        qs = Recipe.objects.prefetch_related("recipeingredient_set__food_item")
-        user = self.request.user
-        if user.is_authenticated:
-            return qs.filter(Q(is_public=True) | Q(user=user))
-        return qs.filter(is_public=True)
+        return Recipe.objects.prefetch_related(
+            "recipeingredient_set__food_item"
+        ).filter(user=self.request.user)
 
 
 class RecipeDetailView(generics.RetrieveAPIView):
     serializer_class = RecipeSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "slug"
 
     def get_queryset(self):
-        qs = Recipe.objects.prefetch_related("recipeingredient_set__food_item")
-        user = self.request.user
-
-        if user.is_authenticated:
-            return qs.filter(Q(is_public=True) | Q(user=user))
-        return qs.filter(is_public=True)
+        return Recipe.objects.prefetch_related(
+            "recipeingredient_set__food_item"
+        ).filter(user=self.request.user)
 
 
 class RecipeCreateView(generics.CreateAPIView):

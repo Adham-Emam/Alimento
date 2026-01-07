@@ -44,6 +44,10 @@ class FoodItemSerializer(serializers.ModelSerializer):
             "price_per_gram_protein",
             "created_at",
         ]
+        read_only_fields = [
+            "price_per_gram_protein",
+            "created_at",
+        ]
 
     def get_price_per_gram_protein(self, obj):
         val = obj.price_per_gram_protein()
@@ -84,6 +88,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "slug",
             "description",
             "is_public",
             "ingredients",
@@ -93,6 +98,21 @@ class RecipeSerializer(serializers.ModelSerializer):
             "fats_g",
             "created_at",
         ]
+
+    def create(self, validated_data):
+        try:
+            recipe_name = validated_data.get("name")
+            if recipe_name is None:
+                raise serializers.ValidationError("Name cannot be None")
+            if Recipe.objects.filter(name=recipe_name).exists():
+                raise serializers.ValidationError(
+                    "Recipe with this name already exists."
+                )
+            return super().create(validated_data)
+        except Exception as e:
+            raise serializers.ValidationError(
+                f"An error occurred while creating the recipe: {e}"
+            )
 
     def _calculate_recipe_nutrition(self, obj):
         """Calculate total nutrition for all ingredients in the recipe."""

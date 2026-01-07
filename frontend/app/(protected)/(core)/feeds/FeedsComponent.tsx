@@ -34,7 +34,7 @@ interface PaginatedResponse<T> {
   results: T[]
 }
 
-export default function FeedsPage() {
+export default function FeedsComponent() {
   const [posts, setPosts] = useState<PostProps[]>([])
   const [count, setCount] = useState(0)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -53,7 +53,7 @@ export default function FeedsPage() {
     setError(null)
     try {
       const res = await apiWithAuth.get<PaginatedResponse<PostProps>>(
-        `api/community/posts/?page=${page}${q ? `&search=${q}` : ''}`
+        `/api/community/posts/?page=${page}${q ? `&search=${q}` : ''}`
       )
       setPosts(res.data.results)
       setCount(res.data.count)
@@ -66,7 +66,6 @@ export default function FeedsPage() {
   }
 
   useEffect(() => {
-    document.title = 'Feeds | Alimento'
     getPosts()
   }, [page, q])
 
@@ -124,7 +123,9 @@ export default function FeedsPage() {
 
       {/* Empty */}
       {!isLoading && !error && posts.length === 0 && (
-        <div className="text-center text-muted-foreground">No posts found.</div>
+        <div className="text-center text-muted-foreground">
+          No recipes found.
+        </div>
       )}
 
       {!isLoading && !error && posts.length > 0 && (

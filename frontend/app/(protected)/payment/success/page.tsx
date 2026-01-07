@@ -1,6 +1,13 @@
+import { Metadata } from 'next'
 import { CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
+
+export const metadata: Metadata = {
+  title: 'Payment Success | Aliménto App',
+  description:
+    'Discover new features, updates, and improvements in the nutrition app.',
+}
 
 export default function PaymentSuccessPage() {
   return (

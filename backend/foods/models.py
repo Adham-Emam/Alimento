@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from decimal import Decimal
 from django.conf import settings
+from django.utils.text import slugify
 
 
 User = get_user_model()
@@ -116,7 +117,8 @@ class NutritionProfile(models.Model):
 
 
 class Recipe(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField(null=True, blank=True)
     is_public = models.BooleanField(default=False)
 
@@ -129,6 +131,11 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class RecipeIngredient(models.Model):
