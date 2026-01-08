@@ -138,6 +138,28 @@ class Recipe(models.Model):
         super().save(*args, **kwargs)
 
 
+class RecipeInstruction(models.Model):
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="instructions"
+    )
+    step_number = models.PositiveIntegerField()
+    text = models.TextField()
+
+    class Meta:
+        ordering = ["step_number"]
+        unique_together = ("recipe", "step_number")
+
+    def __str__(self):
+        return f"{self.recipe.name} - Step {self.step_number}"
+
+    def save(self, *args, **kwargs):
+        if not self.step_number:
+            self.step_number = (
+                RecipeInstruction.objects.filter(recipe=self.recipe).count() + 1
+            )
+        super().save(*args, **kwargs)
+
+
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
     food_item = models.ForeignKey(FoodItem, on_delete=models.CASCADE)

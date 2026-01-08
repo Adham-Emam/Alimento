@@ -1,3 +1,4 @@
+import { apiWithAuth } from './api'
 import type {
   ActivityLevelType,
   ProfileData,
@@ -10,6 +11,7 @@ import type {
   GoalType,
   SexType,
 } from '@/types/onboarding'
+import type { Recipe } from '@/types'
 
 const ACTIVITY_FACTORS: Record<ActivityLevelType, number> = {
   sedentary: 1.2,

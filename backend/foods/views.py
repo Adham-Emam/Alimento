@@ -80,6 +80,7 @@ class RecipeCreateView(generics.CreateAPIView):
 class RecipeUpdateView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RecipeCreateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "slug"
 
     def get_queryset(self):
         return Recipe.objects.filter(user=self.request.user)

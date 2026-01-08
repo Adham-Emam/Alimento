@@ -20,9 +20,9 @@ urlpatterns = [
     path("create/", FoodItemCreateView.as_view(), name="food-create"),
     # Recipes
     path("recipes/", RecipeListView.as_view(), name="recipe-list"),
-    path("recipes/<int:pk>/", RecipeDetailView.as_view(), name="recipe-detail"),
     path("recipes/create/", RecipeCreateView.as_view(), name="recipe-create"),
-    path("recipes/<int:pk>/edit/", RecipeUpdateView.as_view(), name="recipe-update"),
+    path("recipes/<str:slug>/", RecipeDetailView.as_view(), name="recipe-detail"),
+    path("recipes/<str:slug>/edit/", RecipeUpdateView.as_view(), name="recipe-update"),
     # Meals
     path("meals/", MealListView.as_view(), name="meal-list"),
     path("meals/<int:pk>/", MealDetailView.as_view(), name="meal-detail"),

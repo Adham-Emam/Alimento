@@ -5,7 +5,7 @@ import errorImage from '@/public/404-Error.svg'
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center bg-background px-4 text-center">
       <div className="max-w-md">
         <Image
           src={errorImage}

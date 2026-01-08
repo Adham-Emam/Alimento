@@ -106,7 +106,11 @@ export default function RecipesComponent() {
           {recipes.length ? (
             recipes.map((recipe) => (
               <div key={recipe.id}>
-                <Link href={`/food/recipes/${encodeURIComponent(recipe.slug)}`}>
+                <Link
+                  href={`/food/recipes/recipe/${encodeURIComponent(
+                    recipe.slug
+                  )}`}
+                >
                   <RecipeCard {...recipe} />
                 </Link>
               </div>

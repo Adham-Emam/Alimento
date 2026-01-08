@@ -6,6 +6,7 @@ from .models import (
     ServingSize,
     NutritionProfile,
     Recipe,
+    RecipeInstruction,
     RecipeIngredient,
     Meal,
     MealIngredient,
@@ -71,12 +72,19 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         ]
 
 
+class RecipeInstructionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecipeInstruction
+        fields = ("step_number", "text")
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(
         source="recipeingredient_set",
         many=True,
         read_only=True,
     )
+    instructions = RecipeInstructionSerializer(many=True)
 
     calories = serializers.SerializerMethodField()
     protein_g = serializers.SerializerMethodField()
@@ -92,6 +100,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             "description",
             "is_public",
             "ingredients",
+            "instructions",
             "calories",
             "protein_g",
             "carbs_g",
@@ -158,27 +167,33 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
-    ingredients = RecipeIngredientSerializer(
-        source="recipeingredient_set", many=True, required=False
-    )
+    ingredients = RecipeIngredientSerializer(source="recipeingredient_set", many=True)
+
+    instructions = RecipeInstructionSerializer(many=True)
 
     class Meta:
         model = Recipe
-        fields = ["name", "description", "is_public", "ingredients"]
+        fields = ["name", "description", "is_public", "ingredients", "instructions"]
+        read_only_fields = ["created_at"]
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop("recipeingredient_set", [])
-        user = self.context["request"].user
+        instructions_data = validated_data.pop("instructions", [])
 
+        user = self.context["request"].user
         recipe = Recipe.objects.create(user=user, **validated_data)
 
         for item in ingredients_data:
             RecipeIngredient.objects.create(recipe=recipe, **item)
 
+        for instruction in instructions_data:
+            RecipeInstruction.objects.create(recipe=recipe, **instruction)
+
         return recipe
 
     def update(self, instance, validated_data):
         ingredients_data = validated_data.pop("recipeingredient_set", None)
+        instructions_data = validated_data.pop("instructions", None)
 
         with transaction.atomic():
             for attr, value in validated_data.items():
@@ -189,6 +204,11 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 RecipeIngredient.objects.filter(recipe=instance).delete()
                 for item in ingredients_data:
                     RecipeIngredient.objects.create(recipe=instance, **item)
+
+            if instructions_data is not None:
+                RecipeInstruction.objects.filter(recipe=instance).delete()
+                for instruction in instructions_data:
+                    RecipeInstruction.objects.create(recipe=instance, **instruction)
 
         return instance
 
