@@ -121,6 +121,24 @@ const medicalConditions = [
   { id: 'kidney-disease', label: 'Kidney Disease', icon: '🫘' },
 ]
 
+const stepTitles = [
+  'Personal Information',
+  'Activity Level',
+  'Your Goal',
+  'Dietary Preferences',
+  'Allergies & Conditions',
+  'Macro Targets',
+]
+
+const stepDescriptions = [
+  'Tell us about yourself to personalize your experience',
+  'Select your typical activity level',
+  "What's your primary fitness goal?",
+  'Select your dietary preferences (optional)',
+  'Let us know about any allergies or medical conditions (optional)',
+  'Set your daily nutrition targets',
+]
+
 export {
   currencies,
   sexOptions,
@@ -130,4 +148,6 @@ export {
   dietaryOptions,
   allergens,
   medicalConditions,
+  stepTitles,
+  stepDescriptions,
 }
