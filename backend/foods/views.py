@@ -22,14 +22,18 @@ class FoodItemCursorPagination(CursorPagination):
 
 
 class FoodItemListView(generics.ListAPIView):
-    queryset = FoodItem.objects.prefetch_related("serving_size").select_related(
-        "nutrition"
-    )
     serializer_class = FoodItemSerializer
     pagination_class = FoodItemCursorPagination
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     filter_backends = [SearchFilter]
     search_fields = ["name", "nutrition__protein_type"]
+
+    def get_queryset(self):
+        return (
+            FoodItem.objects.prefetch_related("serving_size")
+            .select_related("nutrition")
+            .filter(Q(user=self.request.user) | Q(user__isnull=True))
+        )
 
 
 class FoodItemDetailView(generics.RetrieveAPIView):
@@ -44,10 +48,11 @@ class FoodItemCreateView(generics.CreateAPIView):
     serializer_class = FoodItemSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 # Recipe Endpoints
-
-
 class RecipeListView(generics.ListAPIView):
     serializer_class = RecipeSerializer
     pagination_class = FoodItemCursorPagination

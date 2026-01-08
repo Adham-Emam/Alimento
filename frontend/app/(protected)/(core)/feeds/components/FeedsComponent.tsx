@@ -21,6 +21,7 @@ export default function FeedsComponent() {
   const [posts, setPosts] = useState<PostProps[]>([])
   const [count, setCount] = useState(0)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const searchParams = useSearchParams()

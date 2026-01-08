@@ -37,6 +37,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "user",
             "price",
             "price_quantity",
             "price_unit",
@@ -46,6 +47,7 @@ class FoodItemSerializer(serializers.ModelSerializer):
             "created_at",
         ]
         read_only_fields = [
+            "user",
             "price_per_gram_protein",
             "created_at",
         ]

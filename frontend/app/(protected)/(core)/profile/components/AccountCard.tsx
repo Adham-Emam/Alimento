@@ -8,6 +8,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import { format } from 'date-fns'
 import { Calendar } from '@/components/ui/calendar'
+import { toast } from 'sonner'
 import {
   Popover,
   PopoverContent,
@@ -23,6 +24,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { FaSave } from 'react-icons/fa'
 import { ImSpinner8 } from 'react-icons/im'
+import Loader from '@/components/ui/loader'
 
 /* ------------------ Age Limits ------------------ */
 const today = new Date()
@@ -94,7 +96,7 @@ export default function AccountCard() {
     'w-full rounded-lg border border-ring bg-background! px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring'
 
   const dispatch = useAppDispatch()
-  const { user, isLoading } = useAppSelector((state) => state.auth)
+  const { user } = useAppSelector((state) => state.auth)
 
   const [initialValues, setInitialValues] = useState<any>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -174,13 +176,18 @@ export default function AccountCard() {
     }
   }
 
-  if (isLoading || !initialValues) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <ImSpinner8 className="animate-spin w-8 h-8 text-primary" />
-        <span className="ml-2 text-muted-foreground">Loading profile...</span>
-      </div>
-    )
+  useEffect(() => {
+    if (error) {
+      toast.error(error)
+      setError(null)
+    } else if (success) {
+      toast.success(success)
+      setSuccess(null)
+    }
+  }, [error, success])
+
+  if (!initialValues) {
+    return <Loader />
   }
 
   /* ------------------ JSX ------------------ */
@@ -202,17 +209,6 @@ export default function AccountCard() {
         return (
           <Form className="space-y-5">
             <h2 className="text-2xl font-bold mb-6">Account Information</h2>
-
-            {success && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-800 font-medium">{success}</p>
-              </div>
-            )}
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-800 font-medium">{error}</p>
-              </div>
-            )}
 
             {/* First Name */}
             <div>

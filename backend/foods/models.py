@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from decimal import Decimal
-from django.conf import settings
 from django.utils.text import slugify
 
 
@@ -15,6 +14,9 @@ class FoodItem(models.Model):
         SERVING = "serving", "Serving"
         PIECE = "piece", "Piece"
 
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="food_items", blank=True, null=True
+    )
     off_code = models.CharField(
         max_length=32, unique=True, db_index=True, null=True, blank=True
     )
@@ -55,6 +57,9 @@ class FoodItem(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = ["user", "price"]
 
 
 class ServingSize(models.Model):

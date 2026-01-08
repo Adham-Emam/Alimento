@@ -2,11 +2,13 @@
 import axios from 'axios'
 import { apiWithAuth } from '@/lib/api'
 import { useState, useEffect, FormEvent } from 'react'
-import { notFound, useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import BlogDetailCard from '@/app/(protected)/(core)/blog/components/BlogDetailCard'
 import PostComments from '@/app/(protected)/(core)/blog/components/PostComments'
 import BlogCardSkeleton from '@/app/(protected)/(core)/blog/components/BlogCardSkeleton'
 import type { BlogPostProps } from '@/types'
+import NotFound from '@/app/not-found'
+import { toast } from 'sonner'
 
 const BlogDetailComponent = () => {
   const params = useParams<{ slug: string }>()
@@ -14,8 +16,8 @@ const BlogDetailComponent = () => {
   const [post, setPost] = useState<BlogPostProps | null>(null)
   const [comment, setComment] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [success, setSuccess] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [isNotFound, setIsNotFound] = useState(false)
   const [isLiking, setIsLiking] = useState<boolean>(false)
 
   const getPost = async () => {
@@ -28,15 +30,10 @@ const BlogDetailComponent = () => {
       setPost(res.data)
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        if (err.response?.status === 404) {
-          setIsNotFound(true)
-          return
-        }
         setError(err.response?.data?.detail || 'Failed to load blog post')
       } else {
         setError('Unexpected error occurred')
       }
-      console.error(err)
     } finally {
       setIsLoading(false)
     }
@@ -63,6 +60,12 @@ const BlogDetailComponent = () => {
           likes: liked ? [...prev.likes, {}] : prev.likes.slice(0, -1),
         }
       })
+
+      if (liked) {
+        setSuccess('You liked this post')
+      } else {
+        setSuccess('You unliked this post')
+      }
     } catch (err) {
       console.error('Failed to toggle like', err)
     } finally {
@@ -92,23 +95,31 @@ const BlogDetailComponent = () => {
         }
       })
       setComment('') // clear input
+      setSuccess('Comment added successfully')
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to load blog post')
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.detail || 'Failed to add comment')
+      } else {
+        setError('Unexpected error occurred')
+      }
     } finally {
       setIsLoading(false)
     }
   }
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error)
+      setError(null)
+    } else if (success) {
+      toast.success(success)
+      setSuccess(null)
+    }
+  }, [error, success])
+
   if (isLoading) return <BlogCardSkeleton />
 
-  if (isNotFound) {
-    notFound()
-  }
-
-  if (error)
-    return <div className="text-center py-10 text-destructive">{error}</div>
-
-  if (!post) return null
+  if (!post) return <NotFound />
 
   return (
     slug && (
