@@ -119,7 +119,7 @@ export interface FoodItem {
 }
 
 export interface Recipe {
-  id: string
+  id: number
   name: string
   slug: string
   description: string
@@ -178,4 +178,29 @@ export interface BlogPageProps {
 export interface CreateFoodItemPopupProps {
   isOpen: boolean
   setIsOpen: Dispatch<SetStateAction<boolean>>
+}
+
+export type MealIngredient = {
+  id: number
+  quantity: number
+  unit: string
+  food_item: {
+    id: number
+    name: string
+    nutrition: Nutrition
+  }
+}
+
+export type Meal = {
+  id: number
+  name: string
+  slug: string
+  meal_type: 'breakfast' | 'lunch' | 'dinner'
+  ingredients: MealIngredient[]
+  recipes: Recipe[]
+  calories: string
+  protein_g: string
+  carbs_g: string
+  fats_g: string
+  created_at: string
 }

@@ -48,9 +48,6 @@ class FoodItemCreateView(generics.CreateAPIView):
     serializer_class = FoodItemSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
 
 # Recipe Endpoints
 class RecipeListView(generics.ListAPIView):
@@ -63,7 +60,7 @@ class RecipeListView(generics.ListAPIView):
     def get_queryset(self):
         return Recipe.objects.prefetch_related(
             "recipeingredient_set__food_item"
-        ).filter(user=self.request.user)
+        ).filter(Q(user=self.request.user) | Q(is_public=True))
 
 
 class RecipeDetailView(generics.RetrieveAPIView):
@@ -74,7 +71,7 @@ class RecipeDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Recipe.objects.prefetch_related(
             "recipeingredient_set__food_item"
-        ).filter(user=self.request.user)
+        ).filter(Q(user=self.request.user) | Q(is_public=True))
 
 
 class RecipeCreateView(generics.CreateAPIView):
@@ -88,13 +85,25 @@ class RecipeUpdateView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "slug"
 
     def get_queryset(self):
-        return Recipe.objects.filter(user=self.request.user)
+        return Recipe.objects.filter(Q(user=self.request.user) | Q(is_public=True))
+
+
+class RecipeSelectableView(generics.ListAPIView):
+    serializer_class = RecipeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Recipe.objects.filter(Q(is_public=True) | Q(user=user))
 
 
 # Meal Endpoints
 class MealListView(generics.ListAPIView):
     serializer_class = MealSerializer
+    pagination_class = FoodItemCursorPagination
     permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [SearchFilter]
+    search_fields = ["name"]
 
     def get_queryset(self):
         return Meal.objects.filter(user=self.request.user).prefetch_related(
@@ -106,6 +115,7 @@ class MealListView(generics.ListAPIView):
 class MealDetailView(generics.RetrieveAPIView):
     serializer_class = MealSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "slug"
 
     def get_queryset(self):
         return Meal.objects.filter(user=self.request.user).prefetch_related(
@@ -122,6 +132,7 @@ class MealCreateView(generics.CreateAPIView):
 class MealUpdateView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MealCreateUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = "slug"
 
     def get_queryset(self):
         return Meal.objects.filter(user=self.request.user)

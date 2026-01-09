@@ -7,6 +7,7 @@ from .views import (
     RecipeDetailView,
     RecipeCreateView,
     RecipeUpdateView,
+    RecipeSelectableView,
     MealListView,
     MealDetailView,
     MealCreateView,
@@ -21,11 +22,16 @@ urlpatterns = [
     # Recipes
     path("recipes/", RecipeListView.as_view(), name="recipe-list"),
     path("recipes/create/", RecipeCreateView.as_view(), name="recipe-create"),
+    path(
+        "recipes/selectable/",
+        RecipeSelectableView.as_view(),
+        name="recipe-selectable",
+    ),
     path("recipes/<str:slug>/", RecipeDetailView.as_view(), name="recipe-detail"),
     path("recipes/<str:slug>/edit/", RecipeUpdateView.as_view(), name="recipe-update"),
     # Meals
     path("meals/", MealListView.as_view(), name="meal-list"),
-    path("meals/<int:pk>/", MealDetailView.as_view(), name="meal-detail"),
     path("meals/create/", MealCreateView.as_view(), name="meal-create"),
-    path("meals/<int:pk>/edit/", MealUpdateView.as_view(), name="meal-update"),
+    path("meals/<str:slug>/", MealDetailView.as_view(), name="meal-detail"),
+    path("meals/<str:slug>/edit/", MealUpdateView.as_view(), name="meal-update"),
 ]

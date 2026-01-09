@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import * as Yup from 'yup'
 import {
@@ -123,7 +122,6 @@ export default function OnboardingComponent() {
     complete,
   } = useOnboarding()
 
-  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 

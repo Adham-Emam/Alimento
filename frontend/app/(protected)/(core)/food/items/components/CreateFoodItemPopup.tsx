@@ -16,6 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import axios from 'axios'
+import { toast } from 'sonner'
 
 const FoodItemSchema = Yup.object().shape({
   name: Yup.string().required('Name is required'),
@@ -89,12 +91,15 @@ export default function CreateFoodItemPopup({
     try {
       setError(null)
       setSuccess(null)
-      console.log(values)
       await apiWithAuth.post('/api/foods/create/', values)
       setSuccess('Food item added successfully!')
       setIsOpen(false)
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to add food item')
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || 'Failed to add food item')
+      } else {
+        setError('Unexpected error occurred')
+      }
     }
   }
 
@@ -112,6 +117,14 @@ export default function CreateFoodItemPopup({
       document.body.style.overflow = ''
     }
   }, [isOpen])
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error)
+    } else if (success) {
+      toast.success(success)
+    }
+  }, [error, success])
 
   return (
     <>
@@ -142,8 +155,6 @@ export default function CreateFoodItemPopup({
             <X className="w-5 h-5" />
           </button>
         </div>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        {success && <p className="text-green-500 text-sm">{success}</p>}
         <Formik
           initialValues={initialValues}
           validationSchema={FoodItemSchema}

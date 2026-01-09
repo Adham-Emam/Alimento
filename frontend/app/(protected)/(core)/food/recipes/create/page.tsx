@@ -7,6 +7,6 @@ export const metadata: Metadata = {
     'Discover new features, updates, and improvements in the nutrition app.',
 }
 
-export default function page() {
+export default function RecipeCreatePage() {
   return <RecipeCreateComponent />
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { apiWithAuth } from '@/lib/api'
-import type { Recipe, PaginationProps } from '@/types'
+import type { Meal, PaginationProps } from '@/types'
 import { FaMagnifyingGlass } from 'react-icons/fa6'
 import axios from 'axios'
 import Link from 'next/link'
@@ -14,11 +14,11 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination'
-import RecipeCard from './RecipeCard'
+import MealCard from './MealCard'
 import { SkeletonGrid } from '@/components/food/SkeletonGrid'
 
-export default function RecipesComponent() {
-  const [recipes, setRecipes] = useState<Recipe[] | null>(null)
+export default function MealsComponent() {
+  const [meals, setMeals] = useState<Meal[] | null>(null)
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [prevCursor, setPrevCursor] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -28,16 +28,16 @@ export default function RecipesComponent() {
   const [searchQ, setSearchQ] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
 
-  const fetchRecipes = async (search: string, url?: string) => {
+  const fetchMeals = async (search: string, url?: string) => {
     setIsLoading(true)
     setError(null)
 
     try {
-      const res = await apiWithAuth.get<PaginationProps<Recipe>>(
-        url ?? `/api/foods/recipes/?search=${encodeURIComponent(search)}`
+      const res = await apiWithAuth.get<PaginationProps<Meal>>(
+        url ?? `/api/foods/meals/?search=${encodeURIComponent(search)}`
       )
 
-      setRecipes(res.data.results)
+      setMeals(res.data.results)
       setNextCursor(res.data.next)
       setPrevCursor(res.data.previous)
     } catch (err: any) {
@@ -45,7 +45,7 @@ export default function RecipesComponent() {
         setError(
           err.response.data.detail ||
             err.response.data.message ||
-            'Failed to load recipes'
+            'Failed to load meals'
         )
       } else {
         setError('Unexpected error occurred')
@@ -58,7 +58,7 @@ export default function RecipesComponent() {
   useEffect(() => {
     setNextCursor(null)
     setPrevCursor(null)
-    fetchRecipes(searchQ)
+    fetchMeals(searchQ)
   }, [searchQ])
 
   const handleSearch = (e: React.FormEvent) => {
@@ -85,7 +85,7 @@ export default function RecipesComponent() {
         <input
           value={inputQ}
           onChange={(e) => setInputQ(e.target.value)}
-          placeholder="Search for recipes..."
+          placeholder="Search meals..."
           className="flex-1 outline-none"
         />
         <Button
@@ -99,26 +99,21 @@ export default function RecipesComponent() {
       </form>
 
       {/* List */}
-      {isLoading || !recipes ? (
+      {isLoading || !meals ? (
         <SkeletonGrid />
       ) : (
         <div className="py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {recipes.length ? (
-            recipes.map((recipe) => (
-              <div key={recipe.id}>
-                <Link
-                  href={`/food/recipes/recipe/${encodeURIComponent(
-                    recipe.slug
-                  )}`}
-                >
-                  <RecipeCard {...recipe} />
-                </Link>
-              </div>
+          {meals.length ? (
+            meals.map((meal) => (
+              <Link
+                key={meal.id}
+                href={`/food/meals/meal/${encodeURIComponent(meal.slug)}`}
+              >
+                <MealCard {...meal} />
+              </Link>
             ))
           ) : (
-            <p className="text-xl text-center col-span-full">
-              No recipes found
-            </p>
+            <p className="text-xl text-center col-span-full">No meals found</p>
           )}
         </div>
       )}
@@ -131,7 +126,7 @@ export default function RecipesComponent() {
               <Button
                 variant="outline"
                 disabled={!prevCursor}
-                onClick={() => prevCursor && fetchRecipes(searchQ, prevCursor)}
+                onClick={() => prevCursor && fetchMeals(searchQ, prevCursor)}
               >
                 <PaginationPrevious />
               </Button>
@@ -141,7 +136,7 @@ export default function RecipesComponent() {
               <Button
                 variant="outline"
                 disabled={!nextCursor}
-                onClick={() => nextCursor && fetchRecipes(searchQ, nextCursor)}
+                onClick={() => nextCursor && fetchMeals(searchQ, nextCursor)}
               >
                 <PaginationNext />
               </Button>

@@ -16,7 +16,6 @@ import {
   SelectItem,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { set } from 'date-fns'
 
 type Ingredient = {
   food_item: number
@@ -122,7 +121,6 @@ export default function RecipeCreateComponent() {
       toast.success('Recipe created!')
       router.push('/food/recipes')
     } catch (err: any) {
-      console.log(err)
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.detail || 'Failed to create recipe')
       } else {
@@ -312,7 +310,7 @@ export default function RecipeCreateComponent() {
               )}
             </FieldArray>
 
-            <Button type="submit" className="p-2 rounded mt-4 w-full">
+            <Button type="submit" className="p-2 mt-4 w-full">
               Create Recipe
             </Button>
           </Form>

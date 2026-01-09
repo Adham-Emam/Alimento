@@ -1,36 +1,36 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import RecipesComponent from './components/RecipesComponent'
-import Loader from '@/components/ui/loader'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import Loader from '@/components/ui/loader'
+import MealComponent from './components/MealComponent'
 
 export const metadata: Metadata = {
-  title: 'Recipes | Aliménto App',
+  title: 'Meals | Aliménto App',
   description:
     'Discover new features, updates, and improvements in the nutrition app.',
 }
 
-export default function RecipesPage() {
+export default function MealsPage() {
   return (
     <>
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-extrabold">Recipes</h2>
+          <h2 className="text-2xl font-extrabold">Meals</h2>
           <p className="text-muted-foreground">
-            Manage your Recipes and their Ingredients
+            Manage your Meals and their Ingredients
           </p>
         </div>
         <Button asChild>
-          <Link href="/food/recipes/create">
-            <Plus /> Add Recipe
+          <Link href="/food/meals/create">
+            <Plus /> Add Meal
           </Link>
         </Button>
       </div>
 
       <Suspense fallback={<Loader />}>
-        <RecipesComponent />
+        <MealComponent />
       </Suspense>
     </>
   )

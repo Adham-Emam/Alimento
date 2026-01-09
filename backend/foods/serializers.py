@@ -56,6 +56,31 @@ class FoodItemSerializer(serializers.ModelSerializer):
         val = obj.price_per_gram_protein()
         return float(val) if val is not None else None
 
+    def create(self, validated_data):
+        serving_sizes_data = validated_data.pop("serving_size", [])
+        nutrition_data = validated_data.pop("nutrition", None)
+
+        user = self.context["request"].user
+
+        # Check if user and price is unique together or not
+        if FoodItem.objects.filter(user=user, price=validated_data["price"]).exists():
+            raise serializers.ValidationError(
+                {"message": "You had already added this price before."}
+            )
+
+        # Create FoodItem
+        food_item = FoodItem.objects.create(user=user, **validated_data)
+
+        # Create NutritionProfile
+        if nutrition_data:
+            NutritionProfile.objects.create(food_item=food_item, **nutrition_data)
+
+        # Create ServingSizes
+        for serving in serving_sizes_data:
+            ServingSize.objects.create(food=food_item, **serving)
+
+        return food_item
+
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
     food_item = FoodItemSerializer(read_only=True)
@@ -221,6 +246,7 @@ class MealIngredientSerializer(serializers.ModelSerializer):
         queryset=FoodItem.objects.all(),
         source="food_item",
         write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -245,6 +271,8 @@ class MealSerializer(serializers.ModelSerializer):
         model = Meal
         fields = [
             "id",
+            "name",
+            "slug",
             "meal_type",
             "ingredients",
             "recipes",
@@ -330,9 +358,10 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
         source="mealingredient_set", many=True, required=False
     )
     recipes = serializers.PrimaryKeyRelatedField(
-        queryset=Recipe.objects.filter(is_public=True),
         many=True,
+        queryset=Recipe.objects.all(),
         required=False,
+        write_only=True,
     )
 
     def __init__(self, *args, **kwargs):
@@ -346,10 +375,12 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meal
         fields = [
+            "name",
             "meal_type",
             "ingredients",
             "recipes",
         ]
+        read_only_fields = ["id", "slug", "created_at"]
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -357,7 +388,9 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
         recipes = validated_data.pop("recipes", [])
 
         meal = Meal.objects.create(user=user, **validated_data)
-        meal.recipes.set(recipes)
+
+        if recipes:
+            meal.recipes.set(recipes)
 
         for item in ingredients_data:
             MealIngredient.objects.create(meal=meal, **item)
