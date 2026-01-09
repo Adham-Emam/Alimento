@@ -6,6 +6,7 @@ from .models import (
     ServingSize,
     NutritionProfile,
     Recipe,
+    RecipeInstruction,
     RecipeIngredient,
     Meal,
     MealIngredient,
@@ -25,12 +26,60 @@ class NutritionProfileSerializer(serializers.ModelSerializer):
 
 
 class FoodItemSerializer(serializers.ModelSerializer):
-    serving_size = ServingSizeSerializer(many=True, read_only=True)
-    nutrition = NutritionProfileSerializer(read_only=True)
+    serving_size = ServingSizeSerializer(
+        many=True,
+    )
+    nutrition = NutritionProfileSerializer()
+    price_per_gram_protein = serializers.SerializerMethodField()
 
     class Meta:
         model = FoodItem
-        fields = ["id", "name", "price", "serving_size", "nutrition", "created_at"]
+        fields = [
+            "id",
+            "name",
+            "user",
+            "price",
+            "price_quantity",
+            "price_unit",
+            "serving_size",
+            "nutrition",
+            "price_per_gram_protein",
+            "created_at",
+        ]
+        read_only_fields = [
+            "user",
+            "price_per_gram_protein",
+            "created_at",
+        ]
+
+    def get_price_per_gram_protein(self, obj):
+        val = obj.price_per_gram_protein()
+        return float(val) if val is not None else None
+
+    def create(self, validated_data):
+        serving_sizes_data = validated_data.pop("serving_size", [])
+        nutrition_data = validated_data.pop("nutrition", None)
+
+        user = self.context["request"].user
+
+        # Check if user and price is unique together or not
+        if FoodItem.objects.filter(user=user, price=validated_data["price"]).exists():
+            raise serializers.ValidationError(
+                {"message": "You had already added this price before."}
+            )
+
+        # Create FoodItem
+        food_item = FoodItem.objects.create(user=user, **validated_data)
+
+        # Create NutritionProfile
+        if nutrition_data:
+            NutritionProfile.objects.create(food_item=food_item, **nutrition_data)
+
+        # Create ServingSizes
+        for serving in serving_sizes_data:
+            ServingSize.objects.create(food=food_item, **serving)
+
+        return food_item
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -50,12 +99,19 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         ]
 
 
+class RecipeInstructionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RecipeInstruction
+        fields = ("step_number", "text")
+
+
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = RecipeIngredientSerializer(
         source="recipeingredient_set",
         many=True,
         read_only=True,
     )
+    instructions = RecipeInstructionSerializer(many=True)
 
     calories = serializers.SerializerMethodField()
     protein_g = serializers.SerializerMethodField()
@@ -67,15 +123,32 @@ class RecipeSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            "slug",
             "description",
             "is_public",
             "ingredients",
+            "instructions",
             "calories",
             "protein_g",
             "carbs_g",
             "fats_g",
             "created_at",
         ]
+
+    def create(self, validated_data):
+        try:
+            recipe_name = validated_data.get("name")
+            if recipe_name is None:
+                raise serializers.ValidationError("Name cannot be None")
+            if Recipe.objects.filter(name=recipe_name).exists():
+                raise serializers.ValidationError(
+                    "Recipe with this name already exists."
+                )
+            return super().create(validated_data)
+        except Exception as e:
+            raise serializers.ValidationError(
+                f"An error occurred while creating the recipe: {e}"
+            )
 
     def _calculate_recipe_nutrition(self, obj):
         """Calculate total nutrition for all ingredients in the recipe."""
@@ -121,27 +194,33 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
-    ingredients = RecipeIngredientSerializer(
-        source="recipeingredient_set", many=True, required=False
-    )
+    ingredients = RecipeIngredientSerializer(source="recipeingredient_set", many=True)
+
+    instructions = RecipeInstructionSerializer(many=True)
 
     class Meta:
         model = Recipe
-        fields = ["name", "description", "is_public", "ingredients"]
+        fields = ["name", "description", "is_public", "ingredients", "instructions"]
+        read_only_fields = ["created_at"]
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop("recipeingredient_set", [])
-        user = self.context["request"].user
+        instructions_data = validated_data.pop("instructions", [])
 
+        user = self.context["request"].user
         recipe = Recipe.objects.create(user=user, **validated_data)
 
         for item in ingredients_data:
             RecipeIngredient.objects.create(recipe=recipe, **item)
 
+        for instruction in instructions_data:
+            RecipeInstruction.objects.create(recipe=recipe, **instruction)
+
         return recipe
 
     def update(self, instance, validated_data):
         ingredients_data = validated_data.pop("recipeingredient_set", None)
+        instructions_data = validated_data.pop("instructions", None)
 
         with transaction.atomic():
             for attr, value in validated_data.items():
@@ -153,6 +232,11 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 for item in ingredients_data:
                     RecipeIngredient.objects.create(recipe=instance, **item)
 
+            if instructions_data is not None:
+                RecipeInstruction.objects.filter(recipe=instance).delete()
+                for instruction in instructions_data:
+                    RecipeInstruction.objects.create(recipe=instance, **instruction)
+
         return instance
 
 
@@ -162,6 +246,7 @@ class MealIngredientSerializer(serializers.ModelSerializer):
         queryset=FoodItem.objects.all(),
         source="food_item",
         write_only=True,
+        required=False,
     )
 
     class Meta:
@@ -186,6 +271,8 @@ class MealSerializer(serializers.ModelSerializer):
         model = Meal
         fields = [
             "id",
+            "name",
+            "slug",
             "meal_type",
             "ingredients",
             "recipes",
@@ -271,9 +358,10 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
         source="mealingredient_set", many=True, required=False
     )
     recipes = serializers.PrimaryKeyRelatedField(
-        queryset=Recipe.objects.filter(is_public=True),
         many=True,
+        queryset=Recipe.objects.all(),
         required=False,
+        write_only=True,
     )
 
     def __init__(self, *args, **kwargs):
@@ -287,10 +375,12 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meal
         fields = [
+            "name",
             "meal_type",
             "ingredients",
             "recipes",
         ]
+        read_only_fields = ["id", "slug", "created_at"]
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -298,7 +388,9 @@ class MealCreateUpdateSerializer(serializers.ModelSerializer):
         recipes = validated_data.pop("recipes", [])
 
         meal = Meal.objects.create(user=user, **validated_data)
-        meal.recipes.set(recipes)
+
+        if recipes:
+            meal.recipes.set(recipes)
 
         for item in ingredients_data:
             MealIngredient.objects.create(meal=meal, **item)

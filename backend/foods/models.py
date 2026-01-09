@@ -1,19 +1,65 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from decimal import Decimal
+from django.utils.text import slugify
 
 
 User = get_user_model()
 
 
 class FoodItem(models.Model):
-    name = models.CharField(max_length=255)
+    class PriceUnit(models.TextChoices):
+        G = "g", "Gram"
+        ML = "ml", "Milliliter"
+        SERVING = "serving", "Serving"
+        PIECE = "piece", "Piece"
+
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="food_items", blank=True, null=True
+    )
+    off_code = models.CharField(
+        max_length=32, unique=True, db_index=True, null=True, blank=True
+    )
+    name = models.CharField(max_length=255, db_index=True)
     price = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
+
+    price_quantity = models.FloatField(default=100)
+    price_unit = models.CharField(
+        max_length=10, choices=PriceUnit.choices, default=PriceUnit.G
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def price_per_gram_protein(self):
+
+        nut = getattr(self, "nutrition", None)
+        if not nut or not nut.protein or nut.protein <= 0:
+            return None
+
+        price_amount = Decimal(str(self.price or 0))
+        if price_amount <= 0:
+            return None
+        qty = Decimal(str(self.price_quantity or 0))
+        if qty <= 0:
+            return None
+
+        if self.price_unit == self.PriceUnit.G:
+            grams = qty
+        elif self.price_unit == self.PriceUnit.ML:
+            grams = qty
+        else:
+            return None
+        protein_100g = Decimal(str(nut.protein))
+        protein_in_priced_qty = (protein_100g * grams) / Decimal("100")
+        if protein_in_priced_qty <= 0:
+            return None
+        return price_amount / protein_in_priced_qty
+
     def __str__(self):
         return self.name
+
+    class Meta:
+        unique_together = ["user", "price"]
 
 
 class ServingSize(models.Model):
@@ -48,6 +94,8 @@ class NutritionProfile(models.Model):
         FoodItem, on_delete=models.CASCADE, related_name="nutrition", primary_key=True
     )
 
+    nutrition_basis = models.CharField(max_length=20, default="per_100g")
+
     # Macronutrients (grams)
     calories = models.FloatField(default=0)
     protein = models.FloatField(default=0)
@@ -74,7 +122,8 @@ class NutritionProfile(models.Model):
 
 
 class Recipe(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     description = models.TextField(null=True, blank=True)
     is_public = models.BooleanField(default=False)
 
@@ -87,6 +136,33 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+class RecipeInstruction(models.Model):
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE, related_name="instructions"
+    )
+    step_number = models.PositiveIntegerField()
+    text = models.TextField()
+
+    class Meta:
+        ordering = ["step_number"]
+        unique_together = ("recipe", "step_number")
+
+    def __str__(self):
+        return f"{self.recipe.name} - Step {self.step_number}"
+
+    def save(self, *args, **kwargs):
+        if not self.step_number:
+            self.step_number = (
+                RecipeInstruction.objects.filter(recipe=self.recipe).count() + 1
+            )
+        super().save(*args, **kwargs)
 
 
 class RecipeIngredient(models.Model):
@@ -108,6 +184,9 @@ class Meal(models.Model):
         ("snack", "Snack"),
     )
 
+    name = models.CharField(max_length=255, unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meals")
     meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES)
 
@@ -121,6 +200,11 @@ class Meal(models.Model):
 
     def __str__(self):
         return f"{self.meal_type.title()} meal for {self.user}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 class MealIngredient(models.Model):

@@ -1,8 +1,9 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import AuthForm from '@/components/auth/AuthForm'
+import AuthForm from '../components/AuthForm'
 import Logo from '@/public/Logo.png'
+import Loader from '@/components/ui/loader'
 
 export const metadata = {
   title: 'Register | Aliménto App',
@@ -46,7 +47,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<Loader />}>
           <AuthForm mode="register" />
         </Suspense>
 
