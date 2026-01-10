@@ -217,3 +217,13 @@ export interface MealLog {
   meal: Meal
   consumed_at: string
 }
+
+export interface GenerateDailyPlan {
+  date: string
+  meals: {
+    Breakfast: Meal
+    Lunch: Meal
+    Dinner: Meal
+    Snack: Meal
+  }
+}

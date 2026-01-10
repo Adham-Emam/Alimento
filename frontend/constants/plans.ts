@@ -6,10 +6,10 @@ export const plans = [
     price: '$0 / month',
     features: [
       { label: 'Basic nutrition tracking', available: true },
+      { label: '2 daily Personalized AI meal plans', available: true },
       { label: 'Create meals & recipes', available: true },
       { label: 'Marketplace access', available: false },
       { label: 'Chat with coaches', available: false },
-      { label: 'Personalized AI meal plans', available: false },
     ],
   },
   {
@@ -19,10 +19,10 @@ export const plans = [
     price: '$14.99 / month',
     features: [
       { label: 'Everything in Free', available: true },
+      { label: '30 daily Personalized AI meal plans', available: true },
       { label: 'Advanced nutrition analytics', available: true },
       { label: 'Marketplace access', available: true },
       { label: 'Chat with coaches', available: true },
-      { label: 'Personalized AI meal plans', available: true },
     ],
   },
   {

@@ -5,7 +5,23 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { apiWithAuth } from '@/lib/api'
 import { checkAuth } from '@/redux/api/auth'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import Link from 'next/link'
+import { format, addDays, subDays } from 'date-fns'
+import { NutritionBar } from './NutritionBadge'
+import { Button } from '@/components/ui/button'
+import axios from 'axios'
+import type {
+  UserProps,
+  Meal,
+  MealLog,
+  MacrosProps,
+  GenerateDailyPlan,
+} from '@/types'
+import Loader from '@/components/ui/loader'
+import MealPopup from './MealPopup'
+import MealCard from './MealCard'
+import RateLimitPopup from './RateLimitPopup'
+import { Plus } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,16 +29,13 @@ import {
   TrendingUp,
   Calendar,
 } from 'lucide-react'
-import { NutritionBar } from '@/app/(protected)/(core)/dashboard/components/NutritionBadge'
-import { format, addDays, subDays } from 'date-fns'
-import { Button } from '@/components/ui/button'
-import type { UserProps, MealLog, MacrosProps, Meal } from '@/types'
-import Loader from '@/components/ui/loader'
-import { Plus } from 'lucide-react'
-import { MealCard } from './MealCard'
-import axios from 'axios'
-import { toast } from 'sonner'
-import MealPopup from './MealPopup'
+
+interface DayMealProps {
+  Breakfast: MealLog | null
+  Lunch: MealLog | null
+  Dinner: MealLog | null
+  Snack: MealLog[]
+}
 
 export default function DashboardComponent() {
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -34,16 +47,13 @@ export default function DashboardComponent() {
   const [currMeal, setCurrMeal] = useState<string | null>(null)
   const [isOpen, setIsOpen] = useState(false)
 
-  const [dayMeals, setDayMeals] = useState<{
-    Breakfast: MealLog | null
-    Lunch: MealLog | null
-    Dinner: MealLog | null
-    Snack: MealLog[] | null
-  }>({
+  const [ratePopup, setRatePopup] = useState(false)
+
+  const [dayMeals, setDayMeals] = useState<DayMealProps>({
     Breakfast: null,
     Lunch: null,
     Dinner: null,
-    Snack: null,
+    Snack: [],
   })
   const dispatch = useAppDispatch()
 
@@ -56,6 +66,7 @@ export default function DashboardComponent() {
       dispatch(checkAuth())
     }
   }, [dispatch, isAuthenticated])
+
   const getTargetMacros = async () => {
     try {
       const res = await apiWithAuth.get<UserProps>('/api/auth/users/me/')
@@ -101,30 +112,29 @@ export default function DashboardComponent() {
 
       setConsumedMacros(totals)
 
-      const mealsByType: {
-        Breakfast: MealLog | null
-        Lunch: MealLog | null
-        Dinner: MealLog | null
-        Snack: MealLog[] | null
-      } = {
+      const mealsByType: DayMealProps = {
         Breakfast: null,
         Lunch: null,
         Dinner: null,
-        Snack: null,
+        Snack: [],
       }
 
       logs.forEach((log) => {
-        const type = log.meal.meal_type
+        const type = log.meal.meal_type.toLowerCase()
+        if (type === 'breakfast' && !mealsByType.Breakfast) {
+          mealsByType.Breakfast = log
+        }
 
-        if (type === 'breakfast') mealsByType.Breakfast = log
-        if (type === 'lunch') mealsByType.Lunch = log
-        if (type === 'dinner') mealsByType.Dinner = log
+        if (type === 'lunch' && !mealsByType.Lunch) {
+          mealsByType.Lunch = log
+        }
+
+        if (type === 'dinner' && !mealsByType.Dinner) {
+          mealsByType.Dinner = log
+        }
+
         if (type === 'snack') {
-          if (mealsByType.Snack) {
-            mealsByType.Snack.push(log)
-          } else {
-            mealsByType.Snack = [log]
-          }
+          mealsByType.Snack.push(log)
         }
       })
 
@@ -181,9 +191,9 @@ export default function DashboardComponent() {
     }
   }
 
-  const handleDeleteMeal = async (mealId: number) => {
+  const handleDeleteMeal = async (mealLogId: number) => {
     try {
-      await apiWithAuth.delete(`/api/user/logs/${mealId}/`)
+      await apiWithAuth.delete(`/api/user/logs/${mealLogId}/`)
 
       await getConsumedMacros()
 
@@ -202,12 +212,56 @@ export default function DashboardComponent() {
     }
   }
 
+  const handleAiGeneration = () => {
+    const generationPromise = async () => {
+      try {
+        // 1. Call the AI Endpoint
+        await apiWithAuth.post<GenerateDailyPlan>(
+          `/api/ai/generate/daily-plan/?date=${format(
+            selectedDate,
+            'yyyy-MM-dd'
+          )}`
+        )
+
+        // 2. Refresh the data
+        await getConsumedMacros()
+      } catch (err: any) {
+        // 3. Intercept 429 Errors here to update State (Side Effects)
+        if (axios.isAxiosError(err) && err.response?.status === 429) {
+          setRatePopup(true)
+        }
+
+        // 4. IMPORTANT: Re-throw the error so toast.promise catches it!
+        throw err
+      }
+    }
+
+    // Pass the execution of the promise to the toast
+    toast.promise(generationPromise(), {
+      loading: 'Generating your daily plan...',
+      success: 'Meal plan generated successfully!',
+      error: (err) => {
+        // 5. Handle the TEXT displayed in the toast
+        if (axios.isAxiosError(err)) {
+          // Generic API message
+          return (
+            err.response?.data.detail ||
+            err.response?.data.message ||
+            'Failed to generate meal plan'
+          )
+        }
+
+        return 'Network error or no response'
+      },
+    })
+  }
+
   useEffect(() => {
     getTargetMacros()
   }, [])
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen || ratePopup) {
       // Prevent background scroll
       document.body.style.overflow = 'hidden'
     } else {
@@ -219,7 +273,7 @@ export default function DashboardComponent() {
     return () => {
       document.body.style.overflow = ''
     }
-  }, [isOpen])
+  }, [isOpen, ratePopup])
 
   useEffect(() => {
     getConsumedMacros()
@@ -259,17 +313,9 @@ export default function DashboardComponent() {
             Here's your nutrition overview for today
           </p>
         </div>
-        <Button className="gap-2" asChild>
-          <Link
-            href={
-              user?.subscription?.is_pro
-                ? '/meal-plans'
-                : '/payment/billing?plan=pro'
-            }
-          >
-            <Sparkles className="w-4 h-4" />
-            Generate Meal Plan
-          </Link>
+        <Button className="gap-2" onClick={handleAiGeneration}>
+          <Sparkles className="w-4 h-4" />
+          Generate Meal Plan
         </Button>
       </motion.header>
       <motion.div
@@ -361,14 +407,14 @@ export default function DashboardComponent() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-16"
+        className="grid grid-cols-1 lg:grid-cols-3 gap-4 my-16"
       >
         {[
           { title: 'Breakfast', mealData: dayMeals.Breakfast },
           { title: 'Lunch', mealData: dayMeals.Lunch },
           { title: 'Dinner', mealData: dayMeals.Dinner },
         ].map((item, index) => (
-          <div key={index} className="">
+          <div key={index} className="h-fit">
             <h3 className="text-2xl font-bold">{item.title}</h3>
 
             {item.mealData ? (
@@ -418,6 +464,7 @@ export default function DashboardComponent() {
             handleSubmit={handleAddMeal}
           />
         )}
+        {ratePopup && <RateLimitPopup setRatePopup={setRatePopup} />}
       </AnimatePresence>
     </>
   )

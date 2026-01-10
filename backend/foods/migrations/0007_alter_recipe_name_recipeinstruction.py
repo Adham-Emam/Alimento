@@ -7,26 +7,41 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foods', '0006_alter_recipe_slug'),
+        ("foods", "0006_alter_recipe_slug"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='recipe',
-            name='name',
+            model_name="recipe",
+            name="name",
             field=models.CharField(max_length=255, unique=True),
         ),
         migrations.CreateModel(
-            name='RecipeInstruction',
+            name="RecipeInstruction",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('step_number', models.PositiveIntegerField()),
-                ('text', models.TextField()),
-                ('recipe', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='instructions', to='foods.recipe')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("step_number", models.PositiveIntegerField()),
+                ("text", models.TextField()),
+                (
+                    "recipe",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="instructions",
+                        to="foods.recipe",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['step_number'],
-                'unique_together': {('recipe', 'step_number')},
+                "ordering": ["step_number"],
+                "unique_together": {("recipe", "step_number")},
             },
         ),
     ]

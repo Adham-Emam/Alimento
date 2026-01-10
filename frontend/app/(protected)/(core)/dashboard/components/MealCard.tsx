@@ -10,7 +10,9 @@ type MealCardProps = MealLog & {
   onDelete?: (id: number) => void
 }
 
-export function MealCard({ onDelete, ...mealLog }: MealCardProps) {
+export default function MealCard({ onDelete, ...mealLog }: MealCardProps) {
+  const meal = mealLog.meal
+
   return (
     <motion.div
       initial={{
@@ -24,11 +26,11 @@ export function MealCard({ onDelete, ...mealLog }: MealCardProps) {
       whileTap={{ y: 4, boxShadow: 'none' }}
       whileHover={{ y: -4, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}
       transition={{ duration: 0.3, ease: 'easeOut' }}
-      className="flex flex-col mt-4  max-h-[250px] h-full rounded-2xl bg-card p-5 shadow-soft border"
+      className="flex flex-col mt-4  max-h-[250px]  h-[250px] rounded-2xl bg-card p-5 shadow-soft border"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h4 className="text-lg font-semibold">{mealLog.meal.name}</h4>
+        <h4 className="text-lg font-semibold">{meal.name}</h4>
         <div className="flex items-center gap-2">
           <Flame className="w-5 h-5 text-orange-500" />
           {onDelete && (
@@ -48,7 +50,7 @@ export function MealCard({ onDelete, ...mealLog }: MealCardProps) {
 
       {/* Calories */}
       <div className="mt-auto">
-        <div className="text-3xl font-bold">{mealLog.meal.calories}</div>
+        <div className="text-3xl font-bold">{meal.calories}</div>
         <span className="text-sm text-muted-foreground">kcal</span>
       </div>
 
@@ -56,15 +58,15 @@ export function MealCard({ onDelete, ...mealLog }: MealCardProps) {
       <div className="mt-auto grid grid-cols-3 gap-3  text-sm">
         <div className="flex items-center gap-1">
           <Beef className="w-4 h-4 text-red-500" />
-          {mealLog.meal.protein_g}g
+          {meal.protein_g}g
         </div>
         <div className="flex items-center gap-1">
           <Wheat className="w-4 h-4 text-yellow-500" />
-          {mealLog.meal.carbs_g}g
+          {meal.carbs_g}g
         </div>
         <div className="flex items-center gap-1">
           <Droplet className="w-4 h-4 text-blue-500" />
-          {mealLog.meal.fats_g}g
+          {meal.fats_g}g
         </div>
       </div>
 
@@ -73,7 +75,7 @@ export function MealCard({ onDelete, ...mealLog }: MealCardProps) {
         variant="secondary"
         className="w-full block text-center mt-5 rounded-xl"
       >
-        <Link href={`/food/meals/meal/${mealLog.meal.slug}`}>View Meal</Link>
+        <Link href={`/food/meals/meal/${meal.slug}`}>View Meal</Link>
       </Button>
     </motion.div>
   )

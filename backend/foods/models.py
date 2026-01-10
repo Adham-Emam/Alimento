@@ -184,8 +184,8 @@ class Meal(models.Model):
         ("snack", "Snack"),
     )
 
-    name = models.CharField(max_length=255, unique=True, blank=True)
-    slug = models.SlugField(max_length=255, unique=True, blank=True)
+    name = models.CharField(max_length=255, blank=True)
+    slug = models.SlugField(max_length=255, blank=True)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meals")
     meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES)
@@ -197,6 +197,7 @@ class Meal(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        unique_together = ("user", "name", "meal_type")
 
     def __str__(self):
         return f"{self.meal_type.title()} meal for {self.user}"
