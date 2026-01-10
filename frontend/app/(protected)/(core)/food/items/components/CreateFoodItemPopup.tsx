@@ -1,5 +1,5 @@
 'use client'
-
+3
 import { motion } from 'framer-motion'
 import { X } from 'lucide-react'
 import { Formik, Form, Field, FieldArray, ErrorMessage } from 'formik'
@@ -121,8 +121,10 @@ export default function CreateFoodItemPopup({
   useEffect(() => {
     if (error) {
       toast.error(error)
+      setError(null)
     } else if (success) {
       toast.success(success)
+      setSuccess(null)
     }
   }, [error, success])
 

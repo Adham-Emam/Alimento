@@ -103,7 +103,7 @@ class MealListView(generics.ListAPIView):
     pagination_class = FoodItemCursorPagination
     permission_classes = [permissions.IsAuthenticated]
     filter_backends = [SearchFilter]
-    search_fields = ["name"]
+    search_fields = ["name", "meal_type"]
 
     def get_queryset(self):
         return Meal.objects.filter(user=self.request.user).prefetch_related(
