@@ -98,7 +98,7 @@ class MealLog(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="meal_logs")
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, related_name="logs")
-    consumed_at = models.DateTimeField(auto_now_add=True)
+    consumed_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ["-consumed_at"]

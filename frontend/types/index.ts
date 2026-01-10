@@ -195,12 +195,25 @@ export type Meal = {
   id: number
   name: string
   slug: string
-  meal_type: 'breakfast' | 'lunch' | 'dinner'
+  meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack'
   ingredients: MealIngredient[]
   recipes: Recipe[]
-  calories: string
-  protein_g: string
-  carbs_g: string
-  fats_g: string
+  calories: number
+  protein_g: number
+  carbs_g: number
+  fats_g: number
   created_at: string
+}
+
+export interface MacrosProps {
+  calories?: number
+  protein_g?: number
+  carbs_g?: number
+  fats_g?: number
+}
+
+export interface MealLog {
+  id: number
+  meal: Meal
+  consumed_at: string
 }

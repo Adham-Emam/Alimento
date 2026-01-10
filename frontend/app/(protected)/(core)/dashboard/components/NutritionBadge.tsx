@@ -80,7 +80,7 @@ export function NutritionBar({
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">{label}</span>
           <span className="font-medium">
-            {current} / {target}
+            {current.toFixed(1)} / {target}
             <span className="text-muted-foreground ml-1">
               {type === 'calories' ? 'cal' : 'g'}
             </span>

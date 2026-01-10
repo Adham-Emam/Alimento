@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import DashboardHeader from '@/app/(protected)/(core)/dashboard/components/DashboardHeader'
+import DashboardComponent from './components/DashboardComponent'
 
 export const metadata: Metadata = {
   title: 'Dashboard | Aliménto App',
@@ -7,8 +7,6 @@ export const metadata: Metadata = {
     'Discover new features, updates, and improvements in the nutrition app.',
 }
 
-const DashboardPage = () => {
-  return <DashboardHeader />
+export default function DashboardPage() {
+  return <DashboardComponent />
 }
-
-export default DashboardPage
