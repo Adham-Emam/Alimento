@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     "community",
     "subscriptions",
     "ai_services",
+    "marketplace",
+    "coaching",
     # Third party
     "rest_framework",
     "rest_framework.authtoken",
