@@ -13,7 +13,7 @@ import { FaAppleAlt } from 'react-icons/fa'
 import { RiSunFill, RiMoonFill } from 'react-icons/ri'
 import { IoIosHome } from 'react-icons/io'
 import { FaNewspaper, FaBook, FaUser } from 'react-icons/fa'
-import { FaBasketShopping } from 'react-icons/fa6'
+import { FaBasketShopping, FaBowlFood } from 'react-icons/fa6'
 import { FiLogOut } from 'react-icons/fi'
 import Logo from '@/public/Logo.png'
 
@@ -29,6 +29,7 @@ import {
 
 const navLinks = [
   { icon: <IoIosHome />, name: 'Dashboard', url: '/dashboard' },
+  { icon: <FaBowlFood />, name: 'Feeds', url: '/feeds' },
   {
     icon: <FaBook />,
     name: 'Kitchen',

@@ -245,8 +245,8 @@ class MealIngredientSerializer(serializers.ModelSerializer):
     food_item_id = serializers.PrimaryKeyRelatedField(
         queryset=FoodItem.objects.all(),
         source="food_item",
-        write_only=True,
         required=False,
+        write_only=True,
     )
 
     class Meta:

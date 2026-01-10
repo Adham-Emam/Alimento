@@ -50,3 +50,13 @@ venv/
 .idea/
 /venv/
 seed*
+
+# celery beat schedule files
+celerybeat-schedule
+celerybeat-schedule.db
+celerybeat-schedule.dat
+
+# Django generated files
+staticfiles/
+media/
+logs/

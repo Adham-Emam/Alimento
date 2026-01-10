@@ -48,6 +48,9 @@ class FoodItemCreateView(generics.CreateAPIView):
     serializer_class = FoodItemSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 # Recipe Endpoints
 class RecipeListView(generics.ListAPIView):
