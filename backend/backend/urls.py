@@ -15,9 +15,7 @@ urlpatterns = [
     path("api/blog/", include("blog.urls")),
     path("api/community/", include("community.urls")),
     path("api/subscriptions/", include("subscriptions.urls")),
-
     path("api/ai/", include("ai_services.urls")),
-    
     # OpenAPI schema
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Swagger UI
