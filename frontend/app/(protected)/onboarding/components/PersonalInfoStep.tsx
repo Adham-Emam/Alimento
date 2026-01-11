@@ -10,14 +10,27 @@ import {
   measurementUnits,
 } from '@/constants/onboarding'
 import { useOnboarding } from '@/components/OnboardingProvider'
+import { Calendar } from '@/components/ui/calendar'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { format } from 'date-fns'
 
 interface Props {
   stepErrors: Record<string, string | null>
   submitError: string | null
 }
 
+const baseInput =
+  'w-full rounded-lg border border-border! bg-background! px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring'
+
 export default function PersonalInfoStep({ stepErrors, submitError }: Props) {
   const { data, setProfileData } = useOnboarding()
+
+  const selectedBirthDate = data.profile.birth_date
 
   return (
     <div className="space-y-6 bg-card rounded-2xl p-6 shadow-soft">
@@ -26,19 +39,34 @@ export default function PersonalInfoStep({ stepErrors, submitError }: Props) {
         <Label htmlFor="birth_date">
           Date of Birth <span className="text-destructive">*</span>
         </Label>
-        <Input
-          id="birth_date"
-          type="date"
-          value={data.profile.birth_date}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setProfileData({ birth_date: e.target.value })
-          }
-          className={cn(
-            'h-12',
-            stepErrors['profile.birth_date'] && 'border-destructive'
-          )}
-          max={new Date().toISOString().split('T')[0]}
-        />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              id="data"
+              className={`${baseInput} hover:text-foreground  focus:ring-ring! w-full justify-start`}
+            >
+              {selectedBirthDate
+                ? /* 1. Ensure we parse the string back to a Date object for display */
+                  format(new Date(selectedBirthDate), 'PPP')
+                : 'Pick birth date'}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={
+                selectedBirthDate ? new Date(selectedBirthDate) : undefined
+              }
+              captionLayout="dropdown"
+              onSelect={(d) =>
+                setProfileData({
+                  birth_date: d ? format(d, 'yyyy-MM-dd') : '',
+                })
+              }
+            />
+          </PopoverContent>
+        </Popover>
         {stepErrors['profile.birth_date'] && (
           <p className="text-sm text-destructive">
             {stepErrors['profile.birth_date']}

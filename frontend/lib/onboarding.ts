@@ -186,8 +186,6 @@ export function parseApiDataToOnboardingData(
   const healthData = apiData.health_data
 
   return {
-    first_name: apiData.first_name || '',
-    last_name: apiData.last_name || '',
     profile: {
       profile_image: profile?.profile_image || '',
       display_name: profile?.display_name || '',
@@ -232,8 +230,6 @@ export function convertToApiFormat(data: OnboardingData): UserApiRequest {
     : 'maintenance'
 
   return {
-    first_name: data.first_name || undefined,
-    last_name: data.last_name || undefined,
     profile: {
       profile_image: data.profile.profile_image || undefined,
       display_name: data.profile.display_name || undefined,

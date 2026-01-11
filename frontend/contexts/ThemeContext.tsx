@@ -3,7 +3,7 @@
 import {
   createContext,
   useContext,
-  useEffect,
+  useLayoutEffect,
   useState,
   ReactNode,
 } from 'react'
@@ -18,39 +18,65 @@ interface ThemeContextProps {
 const ThemeContext = createContext<ThemeContextProps | undefined>(undefined)
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setTheme] = useState<Theme | null>(null) // start as null
   const [mounted, setMounted] = useState(false)
 
-  // Initialize theme based on system preference or localStorage
-  useEffect(() => {
+  useLayoutEffect(() => {
     const storedTheme = localStorage.getItem('theme') as Theme | null
+
+    let activeTheme: Theme
     if (storedTheme) {
-      setTheme(storedTheme)
-      document.documentElement.classList.toggle('dark', storedTheme === 'dark')
+      activeTheme = storedTheme
     } else {
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches
-      setTheme(prefersDark ? 'dark' : 'light')
-      document.documentElement.classList.toggle('dark', prefersDark)
+      activeTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
     }
+
+    setTheme(activeTheme)
+    document.documentElement.classList.add(
+      activeTheme === 'dark' ? 'dark' : 'light'
+    )
+    document.documentElement.classList.remove(
+      activeTheme === 'dark' ? 'light' : 'dark'
+    )
+
     setMounted(true)
+
+    // Optional: listen to system preference changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e: MediaQueryListEvent) => {
+      if (!localStorage.getItem('theme')) {
+        const newTheme = e.matches ? 'dark' : 'light'
+        setTheme(newTheme)
+        document.documentElement.classList.add(
+          newTheme === 'dark' ? 'dark' : 'light'
+        )
+        document.documentElement.classList.remove(
+          newTheme === 'dark' ? 'light' : 'dark'
+        )
+      }
+    }
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
   const toggleTheme = () => {
+    if (!theme) return
     const newTheme = theme === 'light' ? 'dark' : 'light'
     setTheme(newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
+    document.documentElement.classList.add(
+      newTheme === 'dark' ? 'dark' : 'light'
+    )
+    document.documentElement.classList.remove(
+      newTheme === 'dark' ? 'light' : 'dark'
+    )
     localStorage.setItem('theme', newTheme)
   }
 
-  // Prevent hydration mismatch by not rendering until mounted
-  if (!mounted) {
-    return (
-      <ThemeContext.Provider value={{ theme: 'light', toggleTheme }}>
-        {children}
-      </ThemeContext.Provider>
-    )
+  if (!mounted || theme === null) {
+    // don’t render anything until we know the theme
+    return null
   }
 
   return (
@@ -62,8 +88,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
 export const useTheme = () => {
   const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider')
-  }
+  if (!context) throw new Error('useTheme must be used within a ThemeProvider')
   return context
 }

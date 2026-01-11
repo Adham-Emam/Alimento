@@ -25,7 +25,7 @@ const Hero = () => {
         className="flex-1 text-center md:text-left"
         style={{ willChange: 'transform, opacity' }}
       >
-        <span className="flex items-center justify-between gap-4 px-2 py-0.5 rounded-full bg-header/20 w-fit mb-4">
+        <span className="flex items-center justify-between gap-4 mx-auto md:mx-0 px-2 py-0.5 rounded-full bg-header/20 w-fit mb-4">
           <IoSparklesOutline />
           AI-Powered Nutrition
         </span>

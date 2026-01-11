@@ -34,8 +34,6 @@ export interface HealthData {
 }
 
 export interface OnboardingData {
-  first_name: string
-  last_name: string
   profile: ProfileData
   health_data: HealthData
 }

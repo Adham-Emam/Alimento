@@ -16,8 +16,6 @@ import { checkOnboardingStatus, completeOnboarding } from '../api/onboarding'
 const TOTAL_STEPS = 6
 
 const defaultData: OnboardingData = {
-  first_name: '',
-  last_name: '',
   profile: {
     profile_image: '',
     display_name: '',
