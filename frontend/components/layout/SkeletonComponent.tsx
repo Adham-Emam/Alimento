@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-const BlogCardSkeleton = () => {
+const SkeletonComponent = () => {
   return (
     <div className="max-w-3xl mx-auto border rounded-2xl overflow-hidden bg-card shadow-sm p-6 space-y-6">
       <div className="flex flex-col space-y-3">
@@ -22,4 +22,4 @@ const BlogCardSkeleton = () => {
   )
 }
 
-export default BlogCardSkeleton
+export default SkeletonComponent

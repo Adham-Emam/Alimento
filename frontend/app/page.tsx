@@ -3,6 +3,23 @@ import LandingNavbar from '@/components/Landing/LandingNavbar'
 import Hero from '@/components/Landing/Hero'
 import Footer from '@/components/Landing/Footer'
 
+export const metadata = {
+  additionalLinkTags: [
+    {
+      rel: 'preload',
+      href: '/hero-section.svg',
+      as: 'image',
+      type: 'image/svg+xml',
+    },
+    {
+      rel: 'preload',
+      href: '/hero-section-light.svg',
+      as: 'image',
+      type: 'image/svg+xml',
+    },
+  ],
+}
+
 const About = dynamic(() => import('@/components/Landing/About'))
 const Features = dynamic(() => import('@/components/Landing/Features'))
 const HowItWorks = dynamic(() => import('@/components/Landing/HowItWorks'))

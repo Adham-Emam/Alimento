@@ -26,6 +26,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu'
+import { cn } from '@/lib/utils'
 
 const navLinks = [
   { icon: <IoIosHome />, name: 'Dashboard', url: '/dashboard' },
@@ -40,25 +41,44 @@ const navLinks = [
         description:
           'Individual raw ingredients such as eggs, cheese, fish, vegetables, and dairy used as building blocks for recipes.',
         url: '/food/items',
+        match: (p: string) => p.startsWith('/food/items'),
       },
       {
         title: 'Recipes',
         description:
           'Prepared dishes made from multiple food items, like omelettes, sandwiches, salads, and fried chicken.',
         url: '/food/recipes',
+        match: (p: string) => p.startsWith('/food/recipes'),
       },
       {
         title: 'Meals',
         description:
           'Complete meals combining recipes and food items together, such as an omelette served with bread and a glass of milk.',
         url: '/food/meals',
+        match: (p: string) => p.startsWith('/food/meals'),
       },
     ],
   },
   {
     icon: <FaBasketShopping />,
     name: 'Marketplace',
-    url: '/marketplace',
+    url: '',
+    content: [
+      {
+        title: 'Products',
+        description:
+          'Shop premium healthy meals, herbs, and wellness products curated from our trusted partners.',
+        url: '/marketplace/products',
+        match: (p: string) => p.startsWith('/marketplace/products'),
+      },
+      {
+        title: 'Coaches',
+        description:
+          'Connect with certified coaches and book personalized health and fitness sessions.',
+        url: '/marketplace/coaches',
+        match: (p: string) => p.startsWith('/marketplace/coaches'),
+      },
+    ],
   },
   { icon: <FaNewspaper />, name: 'Blog', url: '/blog' },
   { icon: <FaUser />, name: 'Profile', url: '/profile' },
@@ -73,7 +93,6 @@ const CoreNavbar = () => {
 
   const toggleOpen = () => setIsOpen(!isOpen)
 
-  const router = useRouter()
   const pathname = usePathname()
 
   const dispatch = useAppDispatch()
@@ -88,6 +107,17 @@ const CoreNavbar = () => {
     handleScroll() // Set initial state
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const isActive = (match?: (p: string) => boolean, pathname?: string) =>
+    Boolean(match && pathname && match(pathname))
+
+  const isDropdownActive = (
+    items?: { match?: (p: string) => boolean }[],
+    pathname?: string
+  ) => {
+    if (!items || !pathname) return false
+    return items.some((item) => item.match?.(pathname))
+  }
 
   const navbarClasses = `fixed top-0 left-0 w-full  duration-300 transition-all lg:h-[85px] z-50 ${
     isOpen
@@ -123,9 +153,12 @@ const CoreNavbar = () => {
                 {link.content ? (
                   <>
                     <NavigationMenuTrigger
-                      className={`flex flex-row items-center gap-2 px-4 py-2
-                      ${pathname.startsWith('/food') ? 'bg-primary/80' : ''}
-                      `}
+                      className={cn(
+                        'flex flex-row items-center gap-2 px-4 py-2',
+                        'data-[state=open]:bg-primary/80',
+                        isDropdownActive(link.content, pathname) &&
+                          'bg-primary/80'
+                      )}
                     >
                       {link.icon}
                       {link.name}
@@ -136,11 +169,12 @@ const CoreNavbar = () => {
                           <li key={item.url}>
                             <NavigationMenuLink
                               asChild
-                              className={`${
-                                item.url.includes(pathname)
+                              className={cn(
+                                'rounded-md',
+                                isActive(item.match, pathname)
                                   ? 'bg-primary/80'
                                   : 'bg-transparent'
-                              }`}
+                              )}
                             >
                               <Link href={item.url}>
                                 <h4 className="font-bold text-medium">

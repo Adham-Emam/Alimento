@@ -5,7 +5,7 @@ import { useState, useEffect, FormEvent } from 'react'
 import { useParams } from 'next/navigation'
 import BlogDetailCard from '@/app/(protected)/(core)/blog/components/BlogDetailCard'
 import PostComments from '@/app/(protected)/(core)/blog/components/PostComments'
-import BlogCardSkeleton from '@/app/(protected)/(core)/blog/components/BlogCardSkeleton'
+import SkeletonComponent from '@/components/layout/SkeletonComponent'
 import type { BlogPostProps } from '@/types'
 import NotFound from '@/app/not-found'
 import { toast } from 'sonner'
@@ -117,7 +117,7 @@ const BlogDetailComponent = () => {
     }
   }, [error, success])
 
-  if (isLoading) return <BlogCardSkeleton />
+  if (isLoading) return <SkeletonComponent />
 
   if (!post) return <NotFound />
 

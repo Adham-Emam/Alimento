@@ -180,6 +180,7 @@ export interface CreateFoodItemPopupProps {
   setIsOpen: Dispatch<SetStateAction<boolean>>
 }
 
+<<<<<<< HEAD
 export type MealIngredient = {
   id: number
   quantity: number
@@ -226,4 +227,21 @@ export interface GenerateDailyPlan {
     Dinner: Meal
     Snack: Meal
   }
+=======
+export interface Product {
+  id: number
+  title: string
+  slug: string
+  description: string
+  product_type: 'SUPPLEMENT' | 'HERB' | 'MEAL' | 'SNACK'
+  price: number
+  affiliate_link: string
+  advisory_text: string
+  contraindications: string
+  calories: number
+  protein: number
+  fat: number
+  carbohydrates: number
+  created_at: Date
+>>>>>>> f6f50a1 (add products marketplace)
 }
