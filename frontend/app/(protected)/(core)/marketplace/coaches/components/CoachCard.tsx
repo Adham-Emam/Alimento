@@ -4,6 +4,21 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function CoachCard(coach: Coach) {
+  const specialization =
+    typeof coach.specialization === 'string'
+      ? coach.specialization.split(',').map((s) => s.trim())
+      : coach.specialization
+
+  const certifications =
+    typeof coach.certifications === 'string'
+      ? coach.certifications.split(',').map((c) => c.trim())
+      : coach.certifications
+
+  const languages =
+    typeof coach.languages === 'string'
+      ? coach.languages.split(',').map((l) => l.trim())
+      : coach.languages
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -50, boxShadow: '0 0 0 0 rgba(0, 0, 0, 0)' }}
@@ -30,7 +45,11 @@ export default function CoachCard(coach: Coach) {
       <div className="text-sm space-y-1">
         <p>
           <span className="font-medium">Specialization:</span>{' '}
-          {coach.specialization.map((s) => s).join(', ')}
+          {specialization.map((s) => s).join(', ')}
+        </p>
+        <p>
+          <span className="font-medium">Certifications:</span>{' '}
+          {certifications.map((c) => c).join(', ')}
         </p>
         <p>
           <span className="font-medium">Experience:</span>{' '}
@@ -38,7 +57,7 @@ export default function CoachCard(coach: Coach) {
         </p>
         <p>
           <span className="font-medium">Languages:</span>{' '}
-          {coach.languages.map((l) => l).join(', ')}
+          {languages.map((l) => l).join(', ')}
         </p>
       </div>
 

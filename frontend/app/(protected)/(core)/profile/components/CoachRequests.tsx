@@ -17,6 +17,7 @@ import type { CoachRequest } from '@/types'
 import { useRouter } from 'next/navigation'
 import { useAppSelector } from '@/redux/hooks'
 import CoachRequestCard from './CoachRequestCard'
+import { get } from 'http'
 
 interface FormValues {
   title: string
@@ -108,6 +109,7 @@ export default function CoachRequests() {
 
       await apiWithAuth.post<CoachRequest>('/api/coaches/requests/', payload)
 
+      await getCoachRequests()
       setSuccess('Coach request sent successfully!')
     } catch (err: any) {
       // Thunk rejectWithValue
