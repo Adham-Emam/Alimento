@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions
-from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework.pagination import CursorPagination
+from rest_framework.filters import SearchFilter
 from rest_framework import status
 from django.utils import timezone
 from django.db import transaction
@@ -13,7 +14,27 @@ from .serializers import (
     CoachProfileSerializer,
 )
 
-# Create your views here.
+
+class CoachCursorPagination(CursorPagination):
+    page_size = 30
+    ordering = "-created_at"
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+class CoachListView(generics.ListAPIView):
+    serializer_class = CoachProfileSerializer
+    pagination_class = CoachCursorPagination
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = [
+        "user__first_name",
+        "user__last_name",
+        "title",
+    ]
+
+    def get_queryset(self):
+        return CoachProfile.objects.all()
 
 
 class MyCoachProfileView(generics.RetrieveUpdateDestroyAPIView):
@@ -31,7 +52,7 @@ class CoachRequestCreateView(generics.CreateAPIView):
 
 class CoachRequestApproveView(generics.UpdateAPIView):
     serializer_class = CoachRequestUpdateSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAdminUser]
 
     def get_queryset(self):
         return CoachRequest.objects.filter(status=CoachRequest.Status.PENDING)
@@ -81,7 +102,7 @@ class CoachRequestResubmitView(generics.UpdateAPIView):
 
 
 class CoachRequestDeclineView(generics.UpdateAPIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = CoachRequestUpdateSerializer
 
     def get_queryset(self):
@@ -118,7 +139,7 @@ class MyCoachRequestView(generics.RetrieveAPIView):
 
 
 class PendingCoachRequestListView(generics.ListAPIView):
-    permission_classes = [IsAdminUser]
+    permission_classes = [permissions.IsAdminUser]
     serializer_class = CoachRequestCreateSerializer
 
     def get_queryset(self):

@@ -1,26 +1,14 @@
-// import { COACHES } from '@/data/coaches'
+import { api } from '@/lib/api'
+import { notFound } from 'next/navigation'
+import CoachProfileComponent from './components/CoachProfileComponent'
+import type { Coach } from '@/types'
 
-// export default function CoachDetails({
-//     params,
-// }: {
-//     params: { id: string }
-// }) {
-//     const coach = COACHES.find(c => c.id === params.id)
-//     if (!coach) return null
+interface Props {
+  params: { id: string }
+}
 
-//     return (
-//         <div className="max-w-4xl mx-auto p-8 space-y-4">
-//             <h1 className="text-3xl font-bold">{coach.name}</h1>
-//             <p>{coach.bio}</p>
+export default async function CoachPage({ params }: Props) {
+  const { id } = await params
 
-//             <div>
-//                 <h3 className="font-semibold">Certifications</h3>
-//                 <ul className="list-disc pl-6">
-//                     {coach.certifications.map(cert => (
-//                         <li key={cert}>{cert}</li>
-//                     ))}
-//                 </ul>
-//             </div>
-//         </div>
-//     )
-// }
+  return <CoachProfileComponent coachId={Number(id)} />
+}

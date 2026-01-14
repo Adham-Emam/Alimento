@@ -23,7 +23,7 @@ export default function MarketplaceHeader() {
           className={`flex-1 rounded-none ${
             pathname === '/marketplace/products'
               ? 'bg-accent hover:bg-accent! text-primary-foreground'
-              : 'bg-transparent hover:bg-accent/20 text-primary!'
+              : 'bg-transparent hover:bg-accent/20 text-card-foreground dark:hover:text-card-foreground'
           }`}
           variant="ghost"
           asChild

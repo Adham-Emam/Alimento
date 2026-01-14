@@ -5,6 +5,7 @@ from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer as DjoserUserCreateSerializer
 from profiles.serializers import UserProfileSerializer, UserHealthDataSerializer
 from subscriptions.serializers import UserSubscriptionSerializer
+from coaching.serializers import CoachProfileSerializer
 
 User = get_user_model()
 
@@ -15,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(source="userprofile", required=False)
     health_data = UserHealthDataSerializer(required=False)
     subscription = UserSubscriptionSerializer(read_only=True)
+    coach_profile = CoachProfileSerializer(read_only=True)
 
     class Meta:
         model = User
@@ -27,6 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
             "profile",
             "health_data",
             "subscription",
+            "coach_profile",
         )
         read_only_fields = ("id", "email", "date_joined")
 

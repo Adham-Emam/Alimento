@@ -31,6 +31,21 @@ export interface UserProps {
     }
   }
 
+  coach_profile: {
+    id: number
+    user: number
+    full_name: string
+    title: string
+    bio: string
+    experience_years: number
+    certifications: string[]
+    specialization: string[]
+    languages: string[]
+    monthly_rate: number
+    created_at: string
+    contact_link: string
+  }
+
   subscription: {
     current_period_end: string
     is_coach: boolean
@@ -180,7 +195,6 @@ export interface CreateFoodItemPopupProps {
   setIsOpen: Dispatch<SetStateAction<boolean>>
 }
 
-<<<<<<< HEAD
 export type MealIngredient = {
   id: number
   quantity: number
@@ -227,7 +241,8 @@ export interface GenerateDailyPlan {
     Dinner: Meal
     Snack: Meal
   }
-=======
+}
+
 export interface Product {
   id: number
   title: string
@@ -243,5 +258,19 @@ export interface Product {
   fat: number
   carbohydrates: number
   created_at: Date
->>>>>>> f6f50a1 (add products marketplace)
+}
+
+export interface Coach {
+  id: number
+  user: number
+  full_name: string
+  title: string
+  bio: string
+  experience_years: number
+  certifications: string[]
+  specialization: string[]
+  languages: string[]
+  monthly_rate: number
+  contact_link: string
+  created_at: string
 }

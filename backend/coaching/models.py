@@ -1,9 +1,5 @@
-from django.db.models import Q
 from django.db import models
-from django.contrib.auth import get_user_model
 from django.conf import settings
-
-# Create your models here.
 
 
 class CoachProfile(models.Model):
@@ -23,6 +19,11 @@ class CoachProfile(models.Model):
     monthly_rate = models.DecimalField(max_digits=8, decimal_places=2)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    contact_link = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 class CoachRequest(models.Model):

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    CoachListView,
     MyCoachProfileView,
     CoachRequestCreateView,
     MyCoachRequestView,
@@ -13,6 +14,7 @@ from .views import (
 app_name = "coaches"
 
 urlpatterns = [
+    path("", CoachListView.as_view(), name="coach-list"),
     # Coach profile (for the currently logged-in coach)
     path("me/profile/", MyCoachProfileView.as_view(), name="my-coach-profile"),
     # Coach request lifecycle (user)
