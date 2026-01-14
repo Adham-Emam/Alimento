@@ -2,6 +2,8 @@ from rest_framework import generics, permissions
 from django.db.models import Q
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import CursorPagination
+from django.shortcuts import get_object_or_404
+
 
 from .models import FoodItem, Recipe, Meal
 from .serializers import (

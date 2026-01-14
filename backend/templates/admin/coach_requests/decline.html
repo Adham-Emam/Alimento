@@ -1,0 +1,72 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+  <style>
+    .decline-wrapper {
+      max-width: 720px;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    }
+
+    .decline-wrapper h1 {
+      color: #b91c1c;
+      margin-bottom: 16px;
+    }
+
+    .decline-wrapper textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      font-size: 14px;
+    }
+
+    .decline-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .decline-actions .confirm-btn {
+      background-color: #dc2626;
+      border-color: #dc2626;
+      color: white;
+      font-weight: 600;
+    }
+
+    .decline-actions .confirm-btn:hover {
+      background-color: #b91c1c;
+      border-color: #b91c1c;
+    }
+
+    .decline-actions .cancel-btn {
+      background-color: #6b7280;
+      border-color: #6b7280;
+      color: white;
+      font-weight: 500;
+    }
+
+    .decline-actions .cancel-btn:hover {
+      background-color: #4b5563;
+      border-color: #4b5563;
+    }
+  </style>
+
+  <div class="decline-wrapper">
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+
+      <div class="decline-actions">
+        <input
+          type="submit"
+          class="button confirm-btn"
+          value="Confirm Decline"
+        />
+        <a href="../" class="button cancel-btn">
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+{% endblock %}

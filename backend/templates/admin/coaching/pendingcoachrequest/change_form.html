@@ -1,0 +1,54 @@
+{% extends "admin/change_form.html" %}
+{% load admin_urls %}
+
+{% block submit_buttons_bottom %}
+
+  {% include "admin/submit_line.html" %}
+
+  <style>
+    .review-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--hairline-color, #e5e7eb);
+    }
+
+    .review-actions .approve-btn {
+      background-color: #16a34a;
+      border-color: #16a34a;
+      color: white;
+      font-weight: 600;
+    }
+
+    .review-actions .approve-btn:hover {
+      background-color: #15803d;
+      border-color: #15803d;
+    }
+
+    .review-actions .decline-btn {
+      background-color: #dc2626;
+      border-color: #dc2626;
+      color: white;
+      font-weight: 600;
+    }
+
+    .review-actions .decline-btn:hover {
+      background-color: #b91c1c;
+      border-color: #b91c1c;
+    }
+  </style>
+
+  <div class="review-actions">
+    <a class="button approve-btn"
+       href="{% url 'admin:coachrequest_approve' object_id %}">
+      ✓ Approve
+    </a>
+
+    <a class="button decline-btn"
+       href="{% url 'admin:coachrequest_decline' object_id %}">
+      ✕ Decline
+    </a>
+  </div>
+
+{% endblock %}

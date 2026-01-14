@@ -73,3 +73,10 @@ class CoachRequest(models.Model):
                 name="unique_pending_coach_request_per_user",
             )
         ]
+
+
+class PendingCoachRequest(CoachRequest):
+    class Meta:
+        proxy = True
+        verbose_name = "Pending Coach Request"
+        verbose_name_plural = "Pending Coach Requests"
