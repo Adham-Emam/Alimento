@@ -267,10 +267,23 @@ export interface Coach {
   title: string
   bio: string
   experience_years: number
-  certifications: string[]
-  specialization: string[]
-  languages: string[]
+  certifications: string | string[]
+  specialization: string | string[]
+  languages: string | string[]
   monthly_rate: number
   contact_link: string
   created_at: string
+}
+
+export interface CoachRequest {
+  title: string
+  bio: string
+  experience_years: number
+  certifications: string[] | string
+  specialization: string[] | string
+  languages: string[] | string
+  monthly_rate: string | number
+  status?: 'pending' | 'approved' | 'declined'
+  decline_reason?: string
+  created_at?: string
 }

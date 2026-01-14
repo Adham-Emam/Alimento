@@ -63,6 +63,23 @@ class CoachRequestUpdateSerializer(serializers.ModelSerializer):
         return instance
 
 
+class CoachRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoachRequest
+        fields = [
+            "title",
+            "bio",
+            "experience_years",
+            "certifications",
+            "specialization",
+            "languages",
+            "monthly_rate",
+            "status",
+            "decline_reason",
+            "created_at",
+        ]
+
+
 class CoachProfileSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
 
@@ -74,6 +91,7 @@ class CoachProfileSerializer(serializers.ModelSerializer):
             "title",
             "bio",
             "experience_years",
+            "contact_link",
             "certifications",
             "specialization",
             "languages",

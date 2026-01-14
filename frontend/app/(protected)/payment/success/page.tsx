@@ -24,7 +24,7 @@ export default function PaymentSuccessPage() {
 
         <div className="flex flex-col gap-3">
           <Button className="w-full" asChild>
-            <Link href="/dashboard">Go to Dashboard</Link>
+            <Link href="/profile">Create Coach Request</Link>
           </Button>
 
           <Button variant="outline" className="w-full" asChild>

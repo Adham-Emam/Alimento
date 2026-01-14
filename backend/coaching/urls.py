@@ -9,6 +9,7 @@ from .views import (
     PendingCoachRequestListView,
     CoachRequestApproveView,
     CoachRequestDeclineView,
+    DeleteMyCoachRequestView,
 )
 
 app_name = "coaches"
@@ -20,6 +21,11 @@ urlpatterns = [
     # Coach request lifecycle (user)
     path("requests/", CoachRequestCreateView.as_view(), name="coach-request-create"),
     path("requests/me/", MyCoachRequestView.as_view(), name="coach-request-me"),
+    path(
+        "requests/me/delete/",
+        DeleteMyCoachRequestView.as_view(),
+        name="coach-request-delete",
+    ),
     path(
         "requests/<int:pk>/resubmit/",
         CoachRequestResubmitView.as_view(),

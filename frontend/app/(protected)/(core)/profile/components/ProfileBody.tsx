@@ -5,9 +5,14 @@ import AccountCard from './AccountCard'
 import GoalsCard from './GoalsCard'
 import NotificationCard from './NotificationCard'
 import PrivacyCard from './PrivacyCard'
+import CoachRequests from './CoachRequests'
+import { useAppSelector } from '@/redux/hooks'
 
 const ProfileBody = () => {
-  const [currentCard, setCurrentCard] = useState('Account')
+  const { user } = useAppSelector((state) => state.auth)
+  const [currentCard, setCurrentCard] = useState(
+    user?.subscription.is_coach ? 'Coach Requests' : 'Account'
+  )
 
   const getCurrentCard = () => {
     switch (currentCard) {
@@ -19,6 +24,8 @@ const ProfileBody = () => {
         return <NotificationCard />
       case 'Privacy & Security':
         return <PrivacyCard />
+      case 'Coach Requests':
+        return <CoachRequests />
     }
   }
 

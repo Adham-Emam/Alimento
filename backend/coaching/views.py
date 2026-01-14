@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import CoachRequest, CoachProfile
 from .serializers import (
+    CoachRequestSerializer,
     CoachRequestUpdateSerializer,
     CoachRequestCreateSerializer,
     CoachProfileSerializer,
@@ -129,13 +130,18 @@ class CoachRequestDeclineView(generics.UpdateAPIView):
 
 
 class MyCoachRequestView(generics.RetrieveAPIView):
-    serializer_class = CoachRequestCreateSerializer
+    serializer_class = CoachRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
-        return get_object_or_404(
-            CoachRequest.objects.filter(user=self.request.user).order_by("-created_at")
-        )
+        return get_object_or_404(CoachRequest.objects.filter(user=self.request.user))
+
+
+class DeleteMyCoachRequestView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return get_object_or_404(CoachRequest.objects.filter(user=self.request.user))
 
 
 class PendingCoachRequestListView(generics.ListAPIView):

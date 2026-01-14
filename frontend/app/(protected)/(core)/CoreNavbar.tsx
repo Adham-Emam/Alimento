@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils'
 
 const navLinks = [
   { icon: <IoIosHome />, name: 'Dashboard', url: '/dashboard' },
-  { icon: <FaBowlFood />, name: 'Feeds', url: '/feeds' },
+  // { icon: <FaBowlFood />, name: 'Feeds', url: '/feeds' },
   {
     icon: <FaBook />,
     name: 'Kitchen',
