@@ -17,7 +17,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
@@ -25,10 +25,11 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")
-CORS_ALLOW_CREDENTIALS = True
-
-# Application definition
+    CORS_ALLOWED_ORIGINS = [
+        origin
+        for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
+        if origin
+    ]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
