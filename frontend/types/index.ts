@@ -276,6 +276,7 @@ export interface Coach {
 }
 
 export interface CoachRequest {
+  id: number
   title: string
   bio: string
   experience_years: number

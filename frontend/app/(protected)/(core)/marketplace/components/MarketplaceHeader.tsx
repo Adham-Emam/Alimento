@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { BicepsFlexed } from 'lucide-react'
 
 export default function MarketplaceHeader() {
   const pathname = usePathname()
@@ -17,6 +18,11 @@ export default function MarketplaceHeader() {
               : 'Book personalized one-on-one sessions with certified health and fitness coaches to receive expert guidance tailored to your goals and lifestyle.'}
           </p>
         </div>
+        <Button asChild>
+          <Link href="/plans">
+            <BicepsFlexed /> Become a Coach
+          </Link>
+        </Button>
       </div>
       <div className="w-full bg-card border flex items-center justify-between rounded-2xl overflow-hidden mt-5">
         <Button

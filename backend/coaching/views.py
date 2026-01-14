@@ -152,3 +152,13 @@ class PendingCoachRequestListView(generics.ListAPIView):
         return CoachRequest.objects.filter(status=CoachRequest.Status.PENDING).order_by(
             "created_at"
         )
+
+
+class CoachRequestListView(generics.ListAPIView):
+    permission_classes = [permissions.IsAdminUser]
+    serializer_class = CoachRequestSerializer
+
+    def get_queryset(self):
+        return CoachRequest.objects.filter(status=CoachRequest.Status.PENDING).order_by(
+            "created_at"
+        )
