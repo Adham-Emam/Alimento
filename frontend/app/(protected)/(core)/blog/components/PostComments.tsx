@@ -44,7 +44,9 @@ const PostComments = ({
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
-        <Button className="rounded-full">Comment</Button>
+        <Button className="rounded-full" type="submit">
+          Comment
+        </Button>
       </form>
       {comments.length === 0 ? (
         <p className="text-muted-foreground text-center">

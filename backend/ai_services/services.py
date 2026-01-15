@@ -139,6 +139,13 @@ Return JSON EXACTLY like:
     for meal_type in MEAL_TYPES:
         rid = ai_result.get(meal_type, None)
 
+        if MealLog.objects.filter(
+            user=user,
+            meal__meal_type=meal_type,
+            consumed_at=day,
+        ).exists():
+            continue
+
         if not rid:
             continue
 
