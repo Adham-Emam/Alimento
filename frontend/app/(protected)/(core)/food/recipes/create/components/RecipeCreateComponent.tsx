@@ -233,7 +233,7 @@ export default function RecipeCreateComponent() {
                         <SelectContent>
                           {['g', 'kg', 'ml', 'l', 'pcs'].map((unit) => (
                             <SelectItem key={unit} value={unit}>
-                              {unit}
+                              {unit === 'g' ? '100g' : unit}
                             </SelectItem>
                           ))}
                         </SelectContent>

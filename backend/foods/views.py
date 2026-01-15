@@ -1,8 +1,8 @@
 from rest_framework import generics, permissions
-from django.db.models import Q
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import CursorPagination
-from django.shortcuts import get_object_or_404
+from django.db.models import Q
+from django.http import Http404
 
 
 from .models import FoodItem, Recipe, Meal
@@ -123,10 +123,19 @@ class MealDetailView(generics.RetrieveAPIView):
     lookup_field = "slug"
 
     def get_queryset(self):
-        return Meal.objects.filter(user=self.request.user).prefetch_related(
+        return Meal.objects.filter(
+            user=self.request.user, slug=self.kwargs["slug"]
+        ).prefetch_related(
             "recipes",
             "mealingredient_set__food_item",
         )
+
+    def get_object(self):
+        qs = self.get_queryset()
+        obj = qs.first()
+        if not obj:
+            raise Http404
+        return obj
 
 
 class MealCreateView(generics.CreateAPIView):

@@ -14,9 +14,11 @@ export default async function ProductDetailPage({ params }: Props) {
   try {
     const res = await api.get<Product>(`/api/marketplace/products/${slug}/`)
     product = res.data
-  } catch (err) {
+  } catch (err: any) {
     console.error(err)
-    return notFound()
+    if (err.response.status === 404) {
+      return notFound()
+    }
   }
 
   if (!product) {

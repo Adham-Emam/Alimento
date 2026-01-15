@@ -197,7 +197,7 @@ class Meal(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        unique_together = ("user", "name", "meal_type")
+        unique_together = ("user", "slug", "name", "meal_type")
 
     def __str__(self):
         return f"{self.meal_type.title()} meal for {self.user}"

@@ -7,8 +7,8 @@ import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { Check, X } from 'lucide-react'
 import { plans } from '@/constants/plans'
 import { motion } from 'framer-motion'
-import { Button } from '../../../../../components/ui/button'
-import Loader from '../../../../../components/ui/loader'
+import { Button } from '@/components/ui/button'
+import Loader from '@/components/ui/loader'
 
 export default function PlansComponent() {
   const [currentPlan, setCurrentPlan] = useState<string | null>(null)
@@ -77,7 +77,7 @@ export default function PlansComponent() {
               </button>
             ) : (
               <Button
-                className="absolute left-1/2 -translate-x-1/2 bottom-4 w-[85%] rounded-xl border px-4 bg-card-foreground text-card py-2 text-sm font-medium"
+                className="absolute left-1/2 -translate-x-1/2 bottom-4 w-[85%] rounded-xl border px-4 bg-card-foreground text-card dark:bg-primary py-2 text-sm font-medium"
                 variant="outline"
                 asChild
               >

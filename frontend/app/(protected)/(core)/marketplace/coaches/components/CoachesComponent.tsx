@@ -27,7 +27,6 @@ export default function CoachesComponent() {
   const [error, setError] = useState<string | null>(null)
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [prevCursor, setPrevCursor] = useState<string | null>(null)
-
   const [inputQ, setInputQ] = useState('')
   const [searchQ, setSearchQ] = useState('')
   const formRef = useRef<HTMLFormElement>(null)
@@ -108,7 +107,7 @@ export default function CoachesComponent() {
         <Button
           size="icon"
           type="submit"
-          className="bg-background rounded-full"
+          className="bg-background dark:text-white rounded-full"
         >
           <FaMagnifyingGlass />
         </Button>

@@ -219,7 +219,7 @@ export default function CreateFoodItemPopup({
                     </SelectTrigger>
                     <SelectContent className="z-300">
                       <SelectGroup>
-                        <SelectItem value="g">Gram</SelectItem>
+                        <SelectItem value="g">100 Gram</SelectItem>
                         <SelectItem value="ml">Millilitre</SelectItem>
                         <SelectItem value="serving">Serving</SelectItem>
                         <SelectItem value="piece">Piece</SelectItem>

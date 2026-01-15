@@ -229,7 +229,7 @@ export default function MealCreateComponent() {
                         <SelectContent>
                           {['g', 'kg', 'ml', 'l', 'pcs'].map((u) => (
                             <SelectItem key={u} value={u}>
-                              {u}
+                              {u === 'g' ? '100g' : u}
                             </SelectItem>
                           ))}
                         </SelectContent>
